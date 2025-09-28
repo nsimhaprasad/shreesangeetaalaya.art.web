@@ -569,6 +569,10 @@ section {
     border-top: 2px solid #f1f2f6;
 }
 
+.hidden {
+    display: none;
+}
+
 .form-group {
     margin-bottom: 20px;
 }

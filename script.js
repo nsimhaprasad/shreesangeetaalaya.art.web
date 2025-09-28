@@ -77,7 +77,7 @@ window.addEventListener('scroll', function() {
     });
 });
 
-// Contact Form Handling
+// Contact Form Handling with Netlify Forms
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -102,20 +102,31 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         return;
     }
 
-    // Simulate form submission (in a real application, you would send this to a server)
+    // Submit to Netlify
     const submitButton = this.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
 
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
 
-    // Simulate API call delay
-    setTimeout(() => {
+    // Submit form data to Netlify
+    fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString()
+    })
+    .then(() => {
         showNotification('Thank you for your message! We will get back to you soon.', 'success');
         this.reset();
         submitButton.textContent = originalText;
         submitButton.disabled = false;
-    }, 1500);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+    });
 });
 
 // Notification System
