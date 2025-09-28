@@ -537,6 +537,38 @@ section {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
+.map-container {
+    margin-bottom: 40px;
+}
+
+.map-container h3 {
+    color: #2d3436;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.map-wrapper {
+    margin-bottom: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.map-note {
+    text-align: center;
+    color: #636e72;
+    font-style: italic;
+    margin: 0;
+}
+
+.contact-form form h3 {
+    color: #2d3436;
+    margin-bottom: 25px;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 2px solid #f1f2f6;
+}
+
 .form-group {
     margin-bottom: 20px;
 }
