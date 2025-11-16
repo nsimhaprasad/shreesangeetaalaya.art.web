@@ -1318,14 +1318,42 @@ teacher = Teacher.create!(
 
 ---
 
-**Questions for Consideration:**
+**CONFIRMED DECISIONS:**
 
-1. Do you want to integrate payment gateway from the start or add it later?
-2. Should we support multiple teachers from day one or start with single teacher?
-3. Do you need parent portal separate from student portal?
-4. Any specific reporting requirements beyond what's listed?
-5. Email/SMS notification preferences?
-6. Preferred deployment platform (Heroku, Railway, VPS, etc.)?
-7. Budget constraints for monthly hosting costs?
+1. ✅ Payment gateway: **Add later** (post-MVP phase)
+2. ✅ Multi-teacher support: **YES** (2 teachers from day one)
+3. ✅ Parent portal: **Use student credentials** (no separate portal)
+4. ✅ SMS notifications: **Defer** to later phase
+5. ✅ Budget: **Very low** - optimize for cheap deployment
+6. ✅ Development strategy: **Local first**, deploy when complete
+
+## BUDGET-OPTIMIZED DEPLOYMENT
+
+### Local Development
+- **Database**: SQLite (switch to PostgreSQL before production)
+- **File Storage**: Local storage (switch to S3/Cloudinary later)
+- **Background Jobs**: ActiveJob with async adapter (no Redis needed)
+- **Cost**: $0/month
+
+### Production Deployment (When Ready)
+**Option 1: Railway.app (Recommended)**
+- Free tier with $5 monthly credit
+- PostgreSQL included
+- Easy Rails deployment
+- **Cost**: $0-10/month
+
+**Option 2: Render.com**
+- Free web service tier
+- Free PostgreSQL (90 days)
+- Auto-deploy from GitHub
+- **Cost**: $0-7/month
+
+**Option 3: Fly.io**
+- 3 free VMs
+- Free PostgreSQL
+- Good performance in India
+- **Cost**: $0-5/month
+
+**Total Monthly Cost: $0-10** (vs initial estimate of $55-110)
 
 Let me know your thoughts on this plan, and we can begin implementation!
