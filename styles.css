@@ -634,6 +634,22 @@ section {
     line-height: 1.6;
 }
 
+.contact-item p a {
+    color: #e74c3c;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-item p a:hover {
+    color: #c0392b;
+    text-decoration: underline;
+}
+
+.contact-item p strong {
+    color: #2d3436;
+    font-size: 1.1rem;
+}
+
 .whatsapp-link {
     color: #25D366;
     text-decoration: none;
@@ -675,6 +691,19 @@ section {
     color: #636e72;
     font-style: italic;
     margin: 0;
+}
+
+.map-container a {
+    transition: all 0.3s ease;
+}
+
+.map-container a:hover {
+    color: #c0392b !important;
+    transform: translateY(-2px);
+}
+
+.map-container a i {
+    margin-right: 5px;
 }
 
 .contact-form form h3 {
@@ -757,6 +786,17 @@ section {
 
 .footer-section ul li a:hover {
     color: #e74c3c;
+}
+
+.footer-section ul li strong {
+    color: #ffffff;
+    font-size: 1.05rem;
+}
+
+.footer-section ul li i {
+    margin-right: 8px;
+    width: 20px;
+    text-align: center;
 }
 
 .social-links {
