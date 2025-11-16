@@ -10,6 +10,13 @@ Rails.application.routes.draw do
   # Main dashboard route
   get "dashboard", to: "dashboard#index"
 
+  # Public routes
+  namespace :public do
+    resources :gallery, only: [:index]
+  end
+  # Alternative public gallery route without namespace prefix
+  get "gallery", to: "public/gallery#index"
+
   # Admin namespace routes
   namespace :admin do
     resources :students
@@ -23,23 +30,65 @@ Rails.application.routes.draw do
     resources :learning_resources do
       resources :resource_assignments, only: [:create, :destroy]
     end
-    resources :fee_structures
+    resources :fee_structures do
+      collection do
+        get :history
+      end
+    end
     resources :fee_offers
     resources :class_sessions
+    resources :gallery, only: [:index, :update]
+
+    # Reports routes
+    get 'reports', to: 'reports#index'
+    get 'reports/earnings', to: 'reports#earnings'
+    get 'reports/attendance', to: 'reports#attendance'
+    get 'reports/students', to: 'reports#students'
+    get 'reports/batch_performance', to: 'reports#batch_performance'
   end
 
   # Teacher namespace routes
   namespace :teacher do
-    resources :students, only: [:index, :show]
-    resources :batches, only: [:index, :show]
+    resources :students
+    resources :batches do
+      resources :batch_enrollments, only: [:create, :destroy]
+    end
     resources :attendances, only: [:index] do
       collection do
-        get :mark
-        post :mark, action: :create_attendance
+        get :mark_attendance
+        post :bulk_mark
+        get :calendar
+        get :report
+        get :students_for_session
       end
     end
-    resources :learning_resources
-    resources :class_sessions
+    resources :learning_resources do
+      resources :resource_assignments, only: [:new, :create, :destroy]
+    end
+    resources :fee_structures, only: [:index]
+    resources :class_sessions do
+      collection do
+        get :new_recurring
+        post :create_recurring
+      end
+      member do
+        post :mark_attendance
+        put :update_attendance
+      end
+    end
+    resources :payments do
+      member do
+        get :receipt
+      end
+      collection do
+        get :student_enrollments
+        post :calculate_amount
+      end
+    end
+    resources :gallery, only: [:index]
+
+    # Reports routes
+    get 'reports', to: 'reports#index'
   end
 
   # Student namespace routes
@@ -47,9 +96,26 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index"
     resources :courses, only: [:index, :show]
     resources :batches, only: [:index, :show]
-    resources :attendances, only: [:index]
+    resources :attendances, only: [:index] do
+      collection do
+        get :calendar
+        get :summary
+      end
+    end
     resources :learning_resources, only: [:index, :show]
-    resources :payments, only: [:index, :show, :new, :create]
+    resources :payments, only: [:index, :show]
+    resources :gallery, only: [:index]
+
+    # Profile routes
+    get "profile", to: "profile#show"
+    get "profile/edit", to: "profile#edit"
+    put "profile", to: "profile#update"
+
+    # Schedule routes
+    get "schedule", to: "schedule#index"
+
+    # Progress routes
+    get "progress", to: "progress#index"
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

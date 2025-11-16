@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_16_125726) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_16_162322) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -136,6 +136,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_125726) do
     t.index ["batch_id"], name: "index_fee_structures_on_batch_id"
   end
 
+  create_table "gallery_settings", force: :cascade do |t|
+    t.string "google_photos_album_url"
+    t.string "album_id"
+    t.boolean "is_enabled", default: false
+    t.string "title"
+    t.text "description"
+    t.boolean "use_google_photos", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "learning_resources", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -144,6 +155,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_125726) do
     t.bigint "uploaded_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "tags"
+    t.string "visibility", default: "private"
+    t.boolean "is_youtube", default: false
     t.index ["uploaded_by"], name: "index_learning_resources_on_uploaded_by"
   end
 
@@ -176,6 +190,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_125726) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "due_date"
+    t.string "priority"
     t.index ["assignable_type", "assignable_id"], name: "index_resource_assignments_on_assignable"
     t.index ["assigned_by"], name: "index_resource_assignments_on_assigned_by"
     t.index ["learning_resource_id"], name: "index_resource_assignments_on_learning_resource_id"

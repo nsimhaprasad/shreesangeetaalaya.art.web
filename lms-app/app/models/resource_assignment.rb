@@ -1,4 +1,7 @@
 class ResourceAssignment < ApplicationRecord
+  # Enums
+  enum priority: { low: 'low', medium: 'medium', high: 'high', urgent: 'urgent' }, _prefix: :priority
+
   # Associations
   belongs_to :learning_resource
   belongs_to :assignable, polymorphic: true
@@ -15,6 +18,11 @@ class ResourceAssignment < ApplicationRecord
   scope :for_batch, -> { where(assignable_type: 'Batch') }
   scope :for_class_session, -> { where(assignable_type: 'ClassSession') }
   scope :recent, -> { order(assigned_at: :desc) }
+  scope :with_due_date, -> { where.not(due_date: nil) }
+  scope :overdue, -> { where('due_date < ?', Time.current) }
+  scope :upcoming, -> { where('due_date >= ?', Time.current) }
+  scope :by_priority, ->(priority) { where(priority: priority) }
+  scope :high_priority, -> { where(priority: ['high', 'urgent']) }
 
   # Callbacks
   before_validation :set_assigned_at, on: :create
@@ -30,6 +38,19 @@ class ResourceAssignment < ApplicationRecord
 
   def assigned_to_class_session?
     assignable_type == 'ClassSession'
+  end
+
+  def overdue?
+    due_date.present? && due_date < Time.current
+  end
+
+  def upcoming?
+    due_date.present? && due_date >= Time.current
+  end
+
+  def days_until_due
+    return nil unless due_date.present?
+    ((due_date - Time.current) / 1.day).round
   end
 
   private
