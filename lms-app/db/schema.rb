@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_16_162322) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_17_062010) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -83,6 +83,22 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_162322) do
     t.index ["teacher_id"], name: "index_batches_on_teacher_id"
   end
 
+  create_table "class_credits", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "batch_id", null: false
+    t.integer "credits", default: 0, null: false
+    t.integer "used_credits", default: 0, null: false
+    t.datetime "purchase_date", null: false
+    t.datetime "expiry_date"
+    t.decimal "amount_paid", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["batch_id"], name: "index_class_credits_on_batch_id"
+    t.index ["expiry_date"], name: "index_class_credits_on_expiry_date"
+    t.index ["student_id", "batch_id"], name: "index_class_credits_on_student_id_and_batch_id"
+    t.index ["student_id"], name: "index_class_credits_on_student_id"
+  end
+
   create_table "class_sessions", force: :cascade do |t|
     t.integer "batch_id", null: false
     t.date "class_date"
@@ -105,6 +121,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_162322) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "email_templates", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "subject", null: false
+    t.text "body", null: false
+    t.text "description"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_email_templates_on_active"
+    t.index ["name"], name: "index_email_templates_on_name", unique: true
   end
 
   create_table "fee_offers", force: :cascade do |t|
@@ -197,6 +225,36 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_162322) do
     t.index ["learning_resource_id"], name: "index_resource_assignments_on_learning_resource_id"
   end
 
+  create_table "sms_templates", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body", null: false
+    t.text "description"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_sms_templates_on_active"
+    t.index ["name"], name: "index_sms_templates_on_name", unique: true
+  end
+
+  create_table "student_purchases", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "batch_id"
+    t.string "purchase_type", null: false
+    t.integer "quantity", default: 1, null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.string "payment_status", default: "pending", null: false
+    t.string "payment_method"
+    t.string "transaction_id"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["batch_id"], name: "index_student_purchases_on_batch_id"
+    t.index ["created_at"], name: "index_student_purchases_on_created_at"
+    t.index ["purchase_type"], name: "index_student_purchases_on_purchase_type"
+    t.index ["student_id", "payment_status"], name: "index_student_purchases_on_student_id_and_payment_status"
+    t.index ["student_id"], name: "index_student_purchases_on_student_id"
+  end
+
   create_table "students", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "guardian_name"
@@ -252,6 +310,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_162322) do
   add_foreign_key "batch_enrollments", "students"
   add_foreign_key "batches", "courses"
   add_foreign_key "batches", "teachers"
+  add_foreign_key "class_credits", "batches"
+  add_foreign_key "class_credits", "students"
   add_foreign_key "class_sessions", "batches"
   add_foreign_key "fee_structures", "batches"
   add_foreign_key "learning_resources", "users", column: "uploaded_by"
@@ -261,6 +321,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_162322) do
   add_foreign_key "payments", "users", column: "recorded_by"
   add_foreign_key "resource_assignments", "learning_resources"
   add_foreign_key "resource_assignments", "users", column: "assigned_by"
+  add_foreign_key "student_purchases", "batches"
+  add_foreign_key "student_purchases", "students"
   add_foreign_key "students", "users"
   add_foreign_key "teachers", "users"
 end

@@ -12,6 +12,8 @@ class Batch < ApplicationRecord
   has_many :fee_structures, dependent: :destroy
   has_many :resource_assignments, as: :assignable, dependent: :destroy
   has_many :learning_resources, through: :resource_assignments
+  has_many :class_credits, dependent: :destroy
+  has_many :student_purchases, dependent: :nullify
 
   # Validations
   validates :name, presence: true

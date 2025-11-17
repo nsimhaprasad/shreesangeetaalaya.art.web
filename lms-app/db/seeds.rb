@@ -9,6 +9,8 @@ if Rails.env.development?
   BatchEnrollment.destroy_all
   Attendance.destroy_all
   Payment.destroy_all
+  StudentPurchase.destroy_all
+  ClassCredit.destroy_all
   ClassSession.destroy_all
   ResourceAssignment.destroy_all
   LearningResource.destroy_all
@@ -19,6 +21,8 @@ if Rails.env.development?
   FeeStructure.destroy_all
   Course.destroy_all
   User.destroy_all
+  EmailTemplate.destroy_all
+  SmsTemplate.destroy_all
 end
 
 # Create Admin User
@@ -431,4 +435,13 @@ puts "  Class Sessions: #{ClassSession.count}"
 puts "  Attendance Records: #{Attendance.count}"
 puts "  Payments: #{Payment.count}"
 puts "  Learning Resources: #{LearningResource.count}"
+puts "="*80
+
+# Load template seeds
+puts "\n"
+load Rails.root.join('db', 'seeds', 'templates_seed.rb')
+
+puts "\nUPDATED STATISTICS:"
+puts "  Email Templates: #{EmailTemplate.count}"
+puts "  SMS Templates: #{SmsTemplate.count}"
 puts "="*80

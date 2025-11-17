@@ -7,6 +7,8 @@ class Student < ApplicationRecord
   has_many :attendances, dependent: :destroy
   has_many :resource_assignments, as: :assignable, dependent: :destroy
   has_many :learning_resources, through: :resource_assignments
+  has_many :class_credits, dependent: :destroy
+  has_many :student_purchases, dependent: :destroy
 
   # Validations
   validates :enrollment_date, presence: true
@@ -64,5 +66,26 @@ class Student < ApplicationRecord
   # Get name from user or fallback
   def name
     user&.full_name || "Student ##{id}"
+  end
+
+  # Credit-related methods
+  def total_credits
+    class_credits.active.sum(:credits)
+  end
+
+  def total_used_credits
+    class_credits.active.sum(:used_credits)
+  end
+
+  def remaining_credits
+    total_credits - total_used_credits
+  end
+
+  def credits_for_batch(batch_id)
+    class_credits.active.for_batch(batch_id).sum { |cc| cc.remaining_credits }
+  end
+
+  def has_credits_for_batch?(batch_id)
+    credits_for_batch(batch_id) > 0
   end
 end

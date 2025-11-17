@@ -39,6 +39,24 @@ Rails.application.routes.draw do
     resources :class_sessions
     resources :gallery, only: [:index, :update]
 
+    # Email and SMS template management
+    resources :email_templates do
+      member do
+        post :toggle_active
+      end
+      collection do
+        post :preview
+      end
+    end
+    resources :sms_templates do
+      member do
+        post :toggle_active
+      end
+      collection do
+        post :preview
+      end
+    end
+
     # Reports routes
     get 'reports', to: 'reports#index'
     get 'reports/earnings', to: 'reports#earnings'
@@ -105,6 +123,17 @@ Rails.application.routes.draw do
     resources :learning_resources, only: [:index, :show]
     resources :payments, only: [:index, :show]
     resources :gallery, only: [:index]
+
+    # Purchase and credits routes
+    resources :purchases do
+      member do
+        post :cancel
+      end
+      collection do
+        get :packages
+        get :credits
+      end
+    end
 
     # Profile routes
     get "profile", to: "profile#show"
