@@ -44,6 +44,13 @@ gem "prawn-table"
 # Image processing for ActiveStorage
 gem "image_processing", "~> 1.2"
 
+# Environment variables
+gem "dotenv-rails", groups: [:development, :test]
+
+# SMS providers (optional - uncomment when ready to use)
+# gem "twilio-ruby"  # For Twilio SMS
+gem "httparty"  # For MSG91 and other REST APIs
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 

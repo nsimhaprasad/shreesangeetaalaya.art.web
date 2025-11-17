@@ -85,20 +85,21 @@ class SmsService
     # Send custom SMS
     def send_custom_sms(phone_number, message)
       return log_sms_not_configured unless sms_configured?
+      return log_invalid_phone(phone_number) unless valid_phone?(phone_number)
 
-      # TODO: Integrate with actual SMS provider (Twilio, MSG91, etc.)
-      # For now, log the SMS
+      # Log the SMS
       log_sms_sent(phone_number, message)
 
-      # When ready for actual integration, uncomment and configure:
-      # TwilioClient.send_sms(
-      #   to: phone_number,
-      #   body: message
-      # )
-
-      true
+      # Send actual SMS if SMS delivery is enabled
+      if sms_delivery_enabled?
+        send_via_provider(phone_number, message)
+      else
+        Rails.logger.info "SMS delivery disabled. SMS logged only."
+        true
+      end
     rescue => e
       Rails.logger.error "SmsService error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       false
     end
 
@@ -112,26 +113,52 @@ class SmsService
       message = SmsTemplate.render_template(template_name, variables)
       return log_template_not_found(template_name) unless message
 
-      # TODO: Integrate with actual SMS provider (Twilio, MSG91, etc.)
-      # For now, log the SMS
+      # Log the SMS for debugging
       log_sms_sent(phone_number, message, variables)
 
-      # When ready for actual integration, uncomment and configure:
-      # TwilioClient.send_sms(
-      #   to: phone_number,
-      #   body: message
-      # )
-
-      true
+      # Send actual SMS if SMS delivery is enabled
+      if sms_delivery_enabled?
+        result = send_via_provider(phone_number, message)
+        if result
+          Rails.logger.info "SMS sent successfully to #{phone_number}"
+        else
+          Rails.logger.error "SMS failed to send to #{phone_number}"
+        end
+        result
+      else
+        Rails.logger.info "SMS delivery disabled. SMS logged only."
+        true
+      end
     rescue => e
       Rails.logger.error "SmsService error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       false
     end
 
     def sms_configured?
       # Check if SMS configuration exists
-      # For now, always return true to allow logging
+      # Always return true to allow logging even if delivery is disabled
       true
+    end
+
+    def sms_delivery_enabled?
+      # Check if SMS delivery is enabled via environment variable
+      # Set SMS_DELIVERY_ENABLED=true in .env to enable actual SMS sending
+      ENV.fetch('SMS_DELIVERY_ENABLED', 'false').downcase == 'true'
+    end
+
+    def send_via_provider(phone_number, message)
+      provider = ENV.fetch('SMS_PROVIDER', 'msg91').downcase
+
+      case provider
+      when 'twilio'
+        Sms::TwilioClient.send_sms(to: phone_number, message: message)
+      when 'msg91'
+        Sms::Msg91Client.send_sms(to: phone_number, message: message)
+      else
+        Rails.logger.error "Unknown SMS provider: #{provider}"
+        false
+      end
     end
 
     def valid_phone?(phone_number)

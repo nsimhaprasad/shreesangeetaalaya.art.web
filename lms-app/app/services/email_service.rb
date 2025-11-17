@@ -138,27 +138,38 @@ class EmailService
       template_content = EmailTemplate.render_template(template_name, variables)
       return log_template_not_found(template_name) unless template_content
 
-      # TODO: Integrate with actual email provider (SendGrid, Mailgun, etc.)
-      # For now, log the email
+      # Log the email for debugging
       log_email_sent(to_email, template_content, variables)
 
-      # When ready for actual integration, uncomment and configure:
-      # UserMailer.with(
-      #   to: to_email,
-      #   subject: template_content[:subject],
-      #   body: template_content[:body]
-      # ).send_email.deliver_later
+      # Send actual email if email delivery is enabled
+      if email_delivery_enabled?
+        UserMailer.send_templated_email(
+          to: to_email,
+          subject: template_content[:subject],
+          body: template_content[:body]
+        ).deliver_later
+        Rails.logger.info "Email queued for delivery to #{to_email}"
+      else
+        Rails.logger.info "Email delivery disabled. Email logged only."
+      end
 
       true
     rescue => e
       Rails.logger.error "EmailService error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       false
     end
 
     def email_configured?
       # Check if email configuration exists
-      # For now, always return true to allow logging
+      # Always return true to allow logging even if delivery is disabled
       true
+    end
+
+    def email_delivery_enabled?
+      # Check if email delivery is enabled via environment variable
+      # Set EMAIL_DELIVERY_ENABLED=true in .env to enable actual email sending
+      ENV.fetch('EMAIL_DELIVERY_ENABLED', 'false').downcase == 'true'
     end
 
     def log_email_sent(to_email, content, variables)
