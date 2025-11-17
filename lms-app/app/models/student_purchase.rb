@@ -7,6 +7,7 @@ class StudentPurchase < ApplicationRecord
   enum purchase_type: {
     one_on_one_credit: 'one_on_one_credit',
     group_class: 'group_class',
+    package_1_month: 'package_1_month',
     package_3_months: 'package_3_months',
     package_6_months: 'package_6_months',
     package_12_months: 'package_12_months'
@@ -75,6 +76,9 @@ class StudentPurchase < ApplicationRecord
       create_class_credits
     end
 
+    # Process referral rewards if this purchase qualifies
+    process_referral_rewards
+
     # Send confirmation emails/SMS
     send_payment_confirmation
   end
@@ -103,5 +107,20 @@ class StudentPurchase < ApplicationRecord
   def send_purchase_notification
     # Send notification to admin about new purchase
     # This can be implemented later
+  end
+
+  def process_referral_rewards
+    # Check if this student was referred
+    referral = student.referral_received
+    return unless referral&.status_pending?
+
+    # Check if this purchase qualifies for reward
+    if referral.qualifies_for_reward?(self)
+      # Mark referral as qualified
+      referral.mark_as_qualified!(self)
+
+      # Process the reward immediately
+      referral.process_reward!
+    end
   end
 end

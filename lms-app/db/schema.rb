@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_17_062010) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -209,6 +209,25 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_062010) do
     t.index ["student_id"], name: "index_payments_on_student_id"
   end
 
+  create_table "referrals", force: :cascade do |t|
+    t.integer "referrer_id", null: false
+    t.integer "referred_student_id", null: false
+    t.string "referral_code", null: false
+    t.string "status", default: "pending", null: false
+    t.integer "qualifying_purchase_id"
+    t.string "reward_type"
+    t.decimal "reward_amount", precision: 10, scale: 2
+    t.datetime "rewarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["qualifying_purchase_id"], name: "index_referrals_on_qualifying_purchase_id"
+    t.index ["referral_code"], name: "index_referrals_on_referral_code"
+    t.index ["referred_student_id"], name: "index_referrals_on_referred_student_id"
+    t.index ["referrer_id", "status"], name: "index_referrals_on_referrer_id_and_status"
+    t.index ["referrer_id"], name: "index_referrals_on_referrer_id"
+    t.index ["status"], name: "index_referrals_on_status"
+  end
+
   create_table "resource_assignments", force: :cascade do |t|
     t.integer "learning_resource_id", null: false
     t.string "assignable_type", null: false
@@ -266,6 +285,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_062010) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "referral_code"
+    t.index ["referral_code"], name: "index_students_on_referral_code", unique: true
     t.index ["user_id"], name: "index_students_on_user_id"
   end
 
@@ -319,6 +340,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_062010) do
   add_foreign_key "payments", "fee_offers"
   add_foreign_key "payments", "students"
   add_foreign_key "payments", "users", column: "recorded_by"
+  add_foreign_key "referrals", "student_purchases", column: "qualifying_purchase_id"
+  add_foreign_key "referrals", "students", column: "referred_student_id"
+  add_foreign_key "referrals", "students", column: "referrer_id"
   add_foreign_key "resource_assignments", "learning_resources"
   add_foreign_key "resource_assignments", "users", column: "assigned_by"
   add_foreign_key "student_purchases", "batches"

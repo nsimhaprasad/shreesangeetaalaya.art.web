@@ -10,8 +10,18 @@ class Student < ApplicationRecord
   has_many :class_credits, dependent: :destroy
   has_many :student_purchases, dependent: :destroy
 
+  # Referral associations
+  has_many :referrals_made, class_name: 'Referral', foreign_key: 'referrer_id', dependent: :destroy
+  has_many :referred_students, through: :referrals_made, source: :referred_student
+  has_one :referral_received, class_name: 'Referral', foreign_key: 'referred_student_id', dependent: :destroy
+  has_one :referrer, through: :referral_received, source: :referrer
+
+  # Callbacks
+  before_create :generate_referral_code
+
   # Validations
   validates :enrollment_date, presence: true
+  validates :referral_code, uniqueness: true, allow_nil: true
   validates :guardian_phone, format: { with: /\A[\d\s\-\+\(\)]+\z/, message: "must be a valid phone number" }, allow_blank: true
   validates :guardian_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :emergency_contact, format: { with: /\A[\d\s\-\+\(\)]+\z/, message: "must be a valid phone number" }, allow_blank: true
@@ -87,5 +97,45 @@ class Student < ApplicationRecord
 
   def has_credits_for_batch?(batch_id)
     credits_for_batch(batch_id) > 0
+  end
+
+  # Referral-related methods
+  def total_referrals
+    referrals_made.count
+  end
+
+  def successful_referrals
+    referrals_made.status_rewarded.count
+  end
+
+  def pending_referrals
+    referrals_made.status_pending.count
+  end
+
+  def total_referral_rewards
+    referrals_made.status_rewarded.sum(:reward_amount)
+  end
+
+  def was_referred?
+    referral_received.present?
+  end
+
+  def referral_link
+    return nil unless referral_code.present?
+    "#{ENV['APP_URL'] || 'http://localhost:3000'}/signup?ref=#{referral_code}"
+  end
+
+  private
+
+  def generate_referral_code
+    loop do
+      code = generate_random_code
+      break self.referral_code = code unless Student.exists?(referral_code: code)
+    end
+  end
+
+  def generate_random_code
+    # Generate format: SSA-XXXXX (SSA = Shree Sangeetha Aalaya)
+    "SSA#{SecureRandom.alphanumeric(5).upcase}"
   end
 end

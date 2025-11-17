@@ -109,6 +109,26 @@ class EmailService
       )
     end
 
+    # Send referral reward notification
+    def send_referral_reward(referral)
+      student = referral.referrer
+      referred = referral.referred_student
+
+      variables = {
+        student_name: student.name,
+        referred_student_name: referred.name,
+        reward_type: referral.reward_display,
+        reward_amount: format_currency(referral.reward_amount),
+        date: referral.rewarded_at&.strftime('%d %b %Y') || Date.today.strftime('%d %b %Y')
+      }
+
+      send_templated_email(
+        'referral_reward',  # Will add this template
+        student.user.email,
+        variables
+      )
+    end
+
     private
 
     # Core method to send templated email

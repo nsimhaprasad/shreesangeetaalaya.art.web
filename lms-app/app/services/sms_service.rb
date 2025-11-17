@@ -65,6 +65,23 @@ class SmsService
       )
     end
 
+    # Send referral reward SMS
+    def send_referral_reward(referral)
+      student = referral.referrer
+      variables = {
+        student_name: student.name.split.first,
+        referred_name: referral.referred_student.name.split.first,
+        reward: referral.reward_display,
+        school_name: 'Shree Sangeetha Aalaya'
+      }
+
+      send_templated_sms(
+        'referral_reward',  # Will add this template
+        student.user.phone,
+        variables
+      )
+    end
+
     # Send custom SMS
     def send_custom_sms(phone_number, message)
       return log_sms_not_configured unless sms_configured?
