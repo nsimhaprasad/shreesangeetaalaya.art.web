@@ -8,6 +8,8 @@ FROM node:${NODE_VERSION} AS node
 
 FROM ruby:${RUBY_VERSION}-slim-bookworm AS base
 
+ARG BUNDLER_VERSION
+
 WORKDIR /rails
 
 RUN gem install --no-document bundler -v ${BUNDLER_VERSION}
