@@ -2,12 +2,15 @@
 
 ARG RUBY_VERSION=3.4.7
 ARG NODE_VERSION=22-bookworm-slim
+ARG BUNDLER_VERSION=2.7.2
 
 FROM node:${NODE_VERSION} AS node
 
 FROM ruby:${RUBY_VERSION}-slim-bookworm AS base
 
 WORKDIR /rails
+
+RUN gem install --no-document bundler -v ${BUNDLER_VERSION}
 
 ENV RAILS_ENV=production \
     RACK_ENV=production \
@@ -43,8 +46,8 @@ RUN bundle config set without "development test" && \
     bundle install && \
     bundle exec bootsnap precompile --gemfile
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
