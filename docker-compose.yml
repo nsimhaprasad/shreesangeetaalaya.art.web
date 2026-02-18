@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -13,7 +11,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       SECRET_KEY_BASE: development_secret_key_change_in_production
     volumes:
-      - .:/rails
+      - ./lms-app:/rails
       - bundle_cache:/usr/local/bundle
       - node_modules:/rails/node_modules
     depends_on:
@@ -58,7 +56,7 @@ services:
       DATABASE_URL: postgres://postgres:password@db:5432/lms_development
       REDIS_URL: redis://redis:6379/0
     volumes:
-      - .:/rails
+      - ./lms-app:/rails
       - bundle_cache:/usr/local/bundle
     depends_on:
       - db

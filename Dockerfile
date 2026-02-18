@@ -18,15 +18,15 @@ RUN apt-get update -qq && \
 WORKDIR /rails
 
 # Install JavaScript dependencies
-COPY package.json package-lock.json ./
+COPY lms-app/package.json lms-app/package-lock.json ./
 RUN npm install
 
 # Install Ruby gems
-COPY Gemfile Gemfile.lock ./
+COPY lms-app/Gemfile lms-app/Gemfile.lock ./
 RUN bundle install
 
 # Copy application code
-COPY . .
+COPY lms-app/. .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
