@@ -43,9 +43,9 @@ services:
       - key: APP_HOST
         value: shreesangeetaalaya.art
       - key: GOOGLE_CLIENT_ID
-        sync: false
+        value: 588638086816-mnjs62mnn4jni11ekd57osira5hkt2dj.apps.googleusercontent.com
       - key: GOOGLE_CLIENT_SECRET
-        sync: false
+        value: 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
       - key: BREVO_API_KEY
         value: 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
       - key: CLOUDINARY_CLOUD_NAME
