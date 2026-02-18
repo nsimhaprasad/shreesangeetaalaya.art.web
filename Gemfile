@@ -12,6 +12,7 @@ gem "jsbundling-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "cssbundling-rails"
+gem "vite_rails"
 gem "jbuilder"
 
 gem "devise"

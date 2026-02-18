@@ -1,3 +1,5 @@
 web: env RUBY_DEBUG_OPEN=true OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES ./bin/rails server -p 3000
 js: npm run build -- --watch
 css: npm run build:css -- --watch
+vite: bin/vite dev
+web: bin/rails s
