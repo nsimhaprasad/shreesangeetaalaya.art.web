@@ -3,7 +3,7 @@ services:
     name: shreesangeetaalaya-web
     runtime: docker
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     autoDeploy: true
     dockerContext: ./lms-app
