@@ -1,28 +1,4 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      RAILS_ENV: development
-      DATABASE_URL: postgres://postgres:password@db:5432/lms_development
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY_BASE: development_secret_key_change_in_production
-    volumes:
-      - .:/rails
-      - bundle_cache:/usr/local/bundle
-      - node_modules:/rails/node_modules
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    command: bash -c "rm -f tmp/pids/server.pid && ./bin/rails server -b 0.0.0.0"
-    stdin_open: true
-    tty: true
-
   db:
     image: postgres:16-alpine
     environment:
@@ -47,26 +23,6 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
 
-  sidekiq:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      RAILS_ENV: development
-      DATABASE_URL: postgres://postgres:password@db:5432/lms_development
-      REDIS_URL: redis://redis:6379/0
-    volumes:
-      - .:/rails
-      - bundle_cache:/usr/local/bundle
-    depends_on:
-      - db
-      - redis
-    command: bundle exec sidekiq
-    profiles:
-      - sidekiq
-
 volumes:
   postgres_data:
   redis_data:
-  bundle_cache:
-  node_modules:

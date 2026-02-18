@@ -1,226 +1,202 @@
-# Docker Development Environment
+# Local Development with Docker Dependencies
 
-This guide will help you run the Shree Sangeetha Aalaya LMS locally using Docker.
+This guide helps you run the Rails app locally while using Docker only for dependencies (PostgreSQL and Redis).
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) (v20.10+)
-- [Docker Compose](https://docs.docker.com/compose/install/) (v2.0+)
+- [Docker](https://docs.docker.com/get-docker/) 
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- Ruby 3.4.7 (use rbenv, rvm, or asdf)
+- Node.js
 
 ## Quick Start
 
-### 1. Clone the repository and navigate to project
+### 1. Start Docker Dependencies
 
 ```bash
-git clone <repository-url>
-cd shreesangeetaalaya.art.web
-```
-
-### 2. Set up environment variables
-
-```bash
-cp .env.example .env
-# Edit .env with your local configuration (no external services needed for basic setup)
-```
-
-### 3. Build and start the containers
-
-```bash
-docker-compose up --build
-```
-
-This will:
-- Build the Rails application image
-- Start PostgreSQL database
-- Start Redis cache
-- Run database migrations
-- Start the Rails server on http://localhost:3000
-
-### 4. Create database (first time only)
-
-In a new terminal:
-
-```bash
-docker-compose exec app ./bin/rails db:create db:migrate db:seed
-```
-
-### 5. Access the application
-
-- **Application**: http://localhost:3000
-- **Database**: localhost:5432 (PostgreSQL)
-- **Redis**: localhost:6379
-
-## Common Commands
-
-### Start the application
-
-```bash
-docker-compose up
-```
-
-### Start in detached mode (background)
-
-```bash
+# Start PostgreSQL and Redis in Docker
 docker-compose up -d
+
+# Check if services are running
+docker-compose ps
 ```
 
-### Stop the application
+### 2. Install Ruby Gems (Local)
 
 ```bash
+# Install bundler if not already installed
+gem install bundler
+
+# Install all gems
+bundle install
+```
+
+### 3. Setup Database
+
+```bash
+# Create database and run migrations
+rails db:create db:migrate
+
+# Optional: Seed with sample data
+rails db:seed
+```
+
+### 4. Start Rails Server
+
+```bash
+# Start the Rails server locally
+rails s
+
+# Or with specific port
+rails s -p 3000
+```
+
+Visit: **http://localhost:3000**
+
+## Workflow
+
+### Daily Development
+
+```bash
+# 1. Start Docker dependencies (if not already running)
+docker-compose up -d
+
+# 2. Start Rails server
+rails s
+
+# 3. Make code changes - they auto-reload instantly
+```
+
+### Stop Everything
+
+```bash
+# Stop Rails server (Ctrl+C in terminal)
+
+# Stop Docker dependencies
 docker-compose down
-```
 
-### Stop and remove volumes (⚠️ deletes database data)
-
-```bash
+# Or stop and remove data (⚠️ deletes database)
 docker-compose down -v
 ```
 
-### View logs
+### View Logs
 
 ```bash
+# Docker logs
 docker-compose logs -f
+
+# Rails logs (in another terminal)
+tail -f log/development.log
 ```
 
-### Run Rails console
+## Common Commands
+
+### Database
 
 ```bash
-docker-compose exec app ./bin/rails console
+# Open database console
+rails dbconsole
+
+# Or with psql
+psql -h localhost -U postgres -d lms_development
+
+# Reset database
+rails db:drop db:create db:migrate
+
+# Run specific migration
+rails db:migrate:up VERSION=20250218000001
 ```
 
-### Run database migrations
+### Redis
 
 ```bash
-docker-compose exec app ./bin/rails db:migrate
+# Connect to Redis
+redis-cli -p 6379
+
+# Check Redis is working
+redis-cli ping  # Should return PONG
 ```
 
-### Install new gems
+### Troubleshooting
 
+**Port already in use:**
 ```bash
-docker-compose exec app bundle install
+# Find what's using port 5432
+lsof -i :5432
+
+# Or change port in docker-compose.yml and .env
 ```
 
-### Install new npm packages
-
+**Database connection refused:**
 ```bash
-docker-compose exec app npm install
+# Make sure Docker is running
+docker-compose ps
+
+# Restart services
+docker-compose restart
+
+# Check logs
+docker-compose logs db
 ```
 
-### Precompile assets (for production)
-
+**Bundle install fails:**
 ```bash
-docker-compose exec app ./bin/rails assets:precompile
+# Update bundler
+gem install bundler
+
+# Clean and reinstall
+bundle clean --force
+bundle install
 ```
 
 ## Services
 
-### Main Application (`app`)
-- Rails 7.2.3 application
-- Runs on port 3000
-- Auto-reloads code changes
-- Connected to PostgreSQL and Redis
-
-### Database (`db`)
-- PostgreSQL 16
-- Data persisted in Docker volume
-- Accessible on port 5432
-
-### Cache (`redis`)
-- Redis 7
-- Used for caching and Sidekiq
-- Accessible on port 6379
-
-### Background Jobs (`sidekiq`) - Optional
-- Run with: `docker-compose --profile sidekiq up`
-- Processes background jobs
-- Requires Redis
+| Service | Host | Port | Docker Name |
+|---------|------|------|-------------|
+| **PostgreSQL** | localhost | 5432 | db |
+| **Redis** | localhost | 6379 | redis |
 
 ## Environment Variables
 
 Key variables in `.env`:
 
 ```bash
-# Database (automatically configured in docker-compose)
-DATABASE_URL=postgres://postgres:password@db:5432/lms_development
+# Database (connects to Docker)
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=password
+DATABASE_URL=postgresql://postgres:password@localhost:5432/lms_development
 
-# Redis (automatically configured in docker-compose)
-REDIS_URL=redis://redis:6379/0
+# Redis (connects to Docker)
+REDIS_URL=redis://localhost:6379/0
 
-# For external integrations (optional for local dev)
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-ZOOM_ACCOUNT_ID=
-ZOOM_API_KEY=
-ZOOM_API_SECRET=
-PHONEPE_MERCHANT_ID=
-PHONEPE_SALT_KEY=
+# Other settings...
 ```
 
-## Troubleshooting
+## Advantages of This Setup
 
-### Port already in use
+✅ **Fast development** - No Docker build time when changing code  
+✅ **Easy debugging** - Full access to local filesystem and gems  
+✅ **IDE integration** - Works with VSCode, RubyMine, etc.  
+✅ **Hot reloading** - Changes appear instantly  
+✅ **Isolated dependencies** - Database and cache in containers  
 
-If port 3000 is already in use, change it in `docker-compose.yml`:
+## Switching to Full Docker
 
-```yaml
-ports:
-  - "3001:3000"  # Use port 3001 instead
-```
-
-### Database connection issues
-
-Reset the database:
+If you later want to run everything in Docker:
 
 ```bash
-docker-compose down -v
-docker-compose up --build
-docker-compose exec app ./bin/rails db:create db:migrate
+# Use the full docker-compose file
+docker-compose -f docker-compose.full.yml up --build
 ```
 
-### Bundle install fails
-
-Rebuild the image:
-
-```bash
-docker-compose down
-docker-compose build --no-cache
-docker-compose up
-```
-
-### File permission issues
-
-If you encounter permission errors:
-
-```bash
-# Linux/Mac
-sudo chown -R $USER:$USER .
-
-# Or change the USER in Dockerfile to match your host user ID
-```
-
-## Development Workflow
-
-1. **Make code changes**: Files are synced between host and container
-2. **Install gems**: Run `docker-compose exec app bundle install`
-3. **Run migrations**: Run `docker-compose exec app ./bin/rails db:migrate`
-4. **Test changes**: Refresh browser at http://localhost:3000
-5. **View logs**: Run `docker-compose logs -f app`
-
-## Production Deployment
-
-For production deployment:
-
-1. Use `Dockerfile` with asset precompilation uncommented
-2. Set proper `SECRET_KEY_BASE` and `RAILS_ENV=production`
-3. Use external PostgreSQL and Redis services
-4. Configure proper logging
-5. Set up SSL/TLS
-
-See `render.yaml` for deployment configuration.
+(Create `docker-compose.full.yml` with the app service if needed)
 
 ## Support
 
-For issues or questions:
-- Check logs: `docker-compose logs`
-- Rails console: `docker-compose exec app ./bin/rails console`
-- Database console: `docker-compose exec db psql -U postgres lms_development`
+For issues:
+- Check Docker is running: `docker ps`
+- Check services are healthy: `docker-compose ps`
+- View logs: `docker-compose logs`
+- Rails console: `rails c`
