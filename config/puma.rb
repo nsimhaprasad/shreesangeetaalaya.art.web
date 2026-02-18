@@ -32,3 +32,10 @@ plugin :tmp_restart
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+# macOS fork safety fix - disable forked workers on macOS in development
+if RUBY_PLATFORM =~ /darwin/ && ENV["RAILS_ENV"] == "development"
+  workers 0
+else
+  workers ENV.fetch("WEB_CONCURRENCY", 0)
+end
