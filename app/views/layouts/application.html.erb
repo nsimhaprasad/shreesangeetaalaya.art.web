@@ -89,18 +89,6 @@
       ]
     }
     </script>
-    <%= vite_client_tag %>
-    <%= vite_javascript_tag 'application' %>
-    <!--
-      If using a TypeScript entrypoint file:
-        vite_typescript_tag 'application'
-
-      If using a .jsx or .tsx entrypoint, add the extension:
-        vite_javascript_tag 'application.jsx'
-
-      Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
-    -->
-
   </head>
 
   <body class="antialiased">
@@ -108,7 +96,9 @@
     
     <script>
       window.addEventListener('load', function() {
-        if ('serviceWorker' in navigator) {
+        if (!('serviceWorker' in navigator)) return;
+
+        <% if Rails.env.production? %>
           navigator.serviceWorker.register('/service-worker.js')
             .then(function(registration) {
               console.log('SW registered: ', registration);
@@ -116,7 +106,13 @@
             .catch(function(registrationError) {
               console.log('SW registration failed: ', registrationError);
             });
-        }
+        <% else %>
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            registrations.forEach(function(registration) {
+              registration.unregister();
+            });
+          });
+        <% end %>
       });
     </script>
   </body>
