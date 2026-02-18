@@ -1,0 +1,61 @@
+# Ignore bundler config
+/.bundle
+
+# Ignore all environment files
+/.env*
+!/.env.example
+
+# Ignore all logfiles and tempfiles
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory
+/tmp/pids/*
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases)
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
+# Ignore assets
+/public/assets
+
+# Ignore master key for decrypting credentials
+/config/master.key
+
+# Ignore git and version control
+.git
+.gitignore
+.gitattributes
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignore CI/CD files
+.github
+
+# Ignore documentation
+*.md
+README.md
+LICENSE
+
+# Ignore test and spec files (if you don't want them in production image)
+# /spec
+# /test
+
+# Ignore node_modules (will be installed during build)
+node_modules
+
+# Ignore local development files
+.DS_Store
+*.swp
+*.swo
+*~
+.idea
+.vscode
