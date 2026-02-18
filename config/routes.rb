@@ -5,8 +5,8 @@ Rails.application.routes.draw do
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
 
-  # Root path - redirects to role-specific dashboard
-  root "dashboard#index"
+  # Public landing page
+  root "public/home#index"
 
   # Main dashboard route
   get "dashboard", to: "dashboard#index"
