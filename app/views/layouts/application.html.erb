@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ed7612">
     
-    <title><%= content_for(:title) || "Shree Sangeetha Aalaya - Carnatic Music Institution" %></title>
+    <title><%= content_for(:title) || "Shree Sangeetaalaya - Carnatic Music Institution" %></title>
     
     <meta name="description" content="<%= content_for(:description) || 'Learn Carnatic vocal and flute music from expert teachers. Shree Sangeetha Aalaya offers online & offline classes in Yelahanka, Bangalore. Enroll for a free demo!' %>">
     <meta name="keywords" content="<%= content_for(:keywords) || 'carnatic music classes, music school yelahanka, flute classes bangalore, carnatic vocal lessons, online music classes, classical music training' %>">
@@ -20,7 +20,7 @@
     <meta property="og:url" content="<%= request.original_url %>">
     <meta property="og:title" content="<%= content_for(:og_title) || content_for(:title) || 'Shree Sangeetha Aalaya - Carnatic Music Institution' %>">
     <meta property="og:description" content="<%= content_for(:og_description) || content_for(:description) || 'Learn Carnatic vocal and flute music from expert teachers.' %>">
-    <meta property="og:image" content="<%= content_for(:og_image) || asset_url('og-image.jpg') %>">
+    <meta property="og:image" content="<%= content_for(:og_image) || '/og-image.jpg' %>">
     <meta property="og:locale" content="en_IN">
     <meta property="og:site_name" content="Shree Sangeetha Aalaya">
     
@@ -28,7 +28,7 @@
     <meta name="twitter:url" content="<%= request.original_url %>">
     <meta name="twitter:title" content="<%= content_for(:twitter_title) || content_for(:title) || 'Shree Sangeetha Aalaya' %>">
     <meta name="twitter:description" content="<%= content_for(:twitter_description) || content_for(:description) || 'Learn Carnatic music from expert teachers.' %>">
-    <meta name="twitter:image" content="<%= content_for(:twitter_image) || asset_url('twitter-card.jpg') %>">
+    <meta name="twitter:image" content="<%= content_for(:twitter_image) || '/twitter-card.jpg' %>">
     
     <meta name="geo.region" content="IN-KA">
     <meta name="geo.placename" content="Yelahanka, Bangalore">
