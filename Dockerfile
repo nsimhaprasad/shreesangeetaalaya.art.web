@@ -1,47 +1,76 @@
-# syntax=docker/dockerfile:1
-FROM ruby:3.4.7-slim-bookworm
+# syntax=docker/dockerfile:1.7
 
-# Install dependencies
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-    build-essential \
-    libpq-dev \
-    libvips \
-    pkg-config \
-    git \
-    curl \
-    nodejs \
-    npm && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+ARG RUBY_VERSION=3.4.7
+ARG NODE_VERSION=22-bookworm-slim
 
-# Set working directory
+FROM node:${NODE_VERSION} AS node
+
+FROM ruby:${RUBY_VERSION}-slim-bookworm AS base
+
 WORKDIR /rails
 
-# Install JavaScript dependencies
-COPY package.json package-lock.json ./
-RUN npm install
+ENV RAILS_ENV=production \
+    RACK_ENV=production \
+    BUNDLE_DEPLOYMENT=1 \
+    BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_WITHOUT="development:test" \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
 
-# Install Ruby gems
+FROM base AS build
+
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+
+RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -sf /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx && \
+    npm install --global yarn@1.22.22
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+      build-essential \
+      curl \
+      git \
+      libpq-dev \
+      libyaml-dev \
+      libvips \
+      pkg-config && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY Gemfile Gemfile.lock ./
-RUN bundle install
+RUN bundle config set without "development test" && \
+    bundle config set deployment "true" && \
+    bundle install && \
+    bundle exec bootsnap precompile --gemfile
 
-# Copy application code
+COPY package.json package-lock.json ./
+RUN npm ci
+
 COPY . .
 
-# Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+RUN bundle exec bootsnap precompile app/ lib/ && \
+    SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
+    rm -rf node_modules tmp/cache log/*
 
-# Precompile assets (for production)
-# RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+FROM base AS runtime
 
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+      libpq5 \
+      libyaml-0-2 \
+      libvips && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build /rails /rails
+
+RUN useradd --system --create-home --home /home/rails --shell /usr/sbin/nologin rails && \
+    mkdir -p /rails/tmp/pids && \
+    chown -R rails:rails /rails/db /rails/log /rails/storage /rails/tmp
+
 USER rails:rails
 
-# Entrypoint prepares the database
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

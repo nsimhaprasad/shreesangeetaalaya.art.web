@@ -42,6 +42,22 @@
 
 # Ignore development files
 /.devcontainer
+/.claude
+
+# Ignore local tooling / deployment metadata not needed in image builds.
+/docker-compose*.yml
+/render.yaml
+/netlify.toml
+
+# Ignore root docs and notes (not required at runtime).
+/*.md
+/*.txt
+
+# Ignore local version manager files.
+/.node-version
+/.ruby-version
+/.tool-versions
+/telemetry-id
 
 # Ignore Docker-related files
 /.dockerignore
