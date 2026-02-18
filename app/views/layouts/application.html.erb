@@ -1,67 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#f5ede1">
-    
-    <title><%= content_for(:title) || "Shree Sangeetaalaya - Carnatic Music Institution" %></title>
-    
-    <meta name="description" content="<%= content_for(:description) || 'Learn Carnatic vocal and flute music from expert teachers. Shree Sangeetha Aalaya offers online & offline classes in Yelahanka, Bangalore. Enroll for a free demo!' %>">
-    <meta name="keywords" content="<%= content_for(:keywords) || 'carnatic music classes, music school yelahanka, flute classes bangalore, carnatic vocal lessons, online music classes, classical music training' %>">
+    <meta name="format-detection" content="telephone=yes">
+    <meta name="theme-color" content="#f5ede1" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0d1422" media="(prefers-color-scheme: dark)">
+
+    <%# ─── PRIMARY META ──────────────────────────────────────────────────── %>
+    <title><%= content_for?(:title) ? yield(:title) : "Shree Sangeetha Aalaya – Carnatic Music Classes in Yelahanka, Bangalore" %></title>
+
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Shree Sangeetha Aalaya offers Carnatic vocal and flute music classes for all ages in Yelahanka, Bangalore. Learn from experienced teachers. Online & offline batches available. Book a free demo today!' %>">
+
+    <meta name="keywords" content="<%= content_for?(:keywords) ? yield(:keywords) : 'carnatic music classes bangalore, carnatic vocal classes yelahanka, flute classes bangalore, music school yelahanka, online carnatic music, classical music training, veena classes, mridangam classes, carnatic music for kids, music classes north bangalore' %>">
+
     <meta name="author" content="Shree Sangeetha Aalaya">
-    <meta name="robots" content="<%= content_for(:robots) || 'index, follow' %>">
-    
-    <link rel="canonical" href="<%= content_for(:canonical) || request.original_url %>">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="<%= request.original_url %>">
-    <meta property="og:title" content="<%= content_for(:og_title) || content_for(:title) || 'Shree Sangeetha Aalaya - Carnatic Music Institution' %>">
-    <meta property="og:description" content="<%= content_for(:og_description) || content_for(:description) || 'Learn Carnatic vocal and flute music from expert teachers.' %>">
-    <meta property="og:image" content="<%= content_for(:og_image) || '/og-image.jpg' %>">
+    <meta name="robots" content="<%= content_for?(:robots) ? yield(:robots) : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' %>">
+    <meta name="googlebot" content="index, follow">
+    <meta name="bingbot" content="index, follow">
+    <meta name="rating" content="general">
+    <meta name="revisit-after" content="7 days">
+    <meta name="language" content="English">
+    <meta name="category" content="Education, Music">
+    <meta name="classification" content="Education">
+
+    <%# ─── CANONICAL ──────────────────────────────────────────────────────── %>
+    <link rel="canonical" href="<%= content_for?(:canonical) ? yield(:canonical) : request.original_url.split('?').first %>">
+
+    <%# ─── OPEN GRAPH ─────────────────────────────────────────────────────── %>
+    <meta property="og:type" content="<%= content_for?(:og_type) ? yield(:og_type) : 'website' %>">
+    <meta property="og:url" content="<%= request.original_url.split('?').first %>">
+    <meta property="og:title" content="<%= content_for?(:og_title) ? yield(:og_title) : (content_for?(:title) ? yield(:title) : 'Shree Sangeetha Aalaya – Carnatic Music Classes') %>">
+    <meta property="og:description" content="<%= content_for?(:og_description) ? yield(:og_description) : (content_for?(:description) ? yield(:description) : 'Premier Carnatic music school in Yelahanka, Bangalore. Vocal and flute classes for all ages.') %>">
+    <meta property="og:image" content="<%= content_for?(:og_image) ? yield(:og_image) : asset_url('og-image.jpg') %>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Shree Sangeetha Aalaya – Carnatic Music School">
     <meta property="og:locale" content="en_IN">
     <meta property="og:site_name" content="Shree Sangeetha Aalaya">
-    
+
+    <%# ─── TWITTER CARD ───────────────────────────────────────────────────── %>
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="<%= request.original_url %>">
-    <meta name="twitter:title" content="<%= content_for(:twitter_title) || content_for(:title) || 'Shree Sangeetha Aalaya' %>">
-    <meta name="twitter:description" content="<%= content_for(:twitter_description) || content_for(:description) || 'Learn Carnatic music from expert teachers.' %>">
-    <meta name="twitter:image" content="<%= content_for(:twitter_image) || '/twitter-card.jpg' %>">
-    
+    <meta name="twitter:site" content="@shreesangeetaalaya">
+    <meta name="twitter:creator" content="@shreesangeetaalaya">
+    <meta name="twitter:url" content="<%= request.original_url.split('?').first %>">
+    <meta name="twitter:title" content="<%= content_for?(:twitter_title) ? yield(:twitter_title) : (content_for?(:title) ? yield(:title) : 'Shree Sangeetha Aalaya') %>">
+    <meta name="twitter:description" content="<%= content_for?(:twitter_description) ? yield(:twitter_description) : (content_for?(:description) ? yield(:description) : 'Learn Carnatic music from expert teachers in Bangalore.') %>">
+    <meta name="twitter:image" content="<%= content_for?(:twitter_image) ? yield(:twitter_image) : asset_url('og-image.jpg') %>">
+
+    <%# ─── GEO META ────────────────────────────────────────────────────────── %>
     <meta name="geo.region" content="IN-KA">
-    <meta name="geo.placename" content="Yelahanka, Bangalore">
+    <meta name="geo.placename" content="Yelahanka, Bangalore, Karnataka, India">
     <meta name="geo.position" content="13.1007;77.5963">
     <meta name="ICBM" content="13.1007, 77.5963">
-    
+
+    <%# ─── SECURITY ──────────────────────────────────────────────────────── %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
+    <%# ─── PWA ────────────────────────────────────────────────────────────── %>
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
-    
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <%# ─── FONTS ─────────────────────────────────────────────────────────── %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Nunito+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Nunito+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <%# ─── THEME FLASH PREVENTION ────────────────────────────────────────── %>
     <script>
       (function() {
         var key = 'ssa-theme';
         var stored = null;
-        try { stored = localStorage.getItem(key); } catch (e) { stored = null; }
-
+        try { stored = localStorage.getItem(key); } catch (e) {}
         var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         var theme = stored === 'light' || stored === 'dark' ? stored : (prefersDark ? 'dark' : 'light');
         document.documentElement.dataset.theme = theme;
         document.documentElement.style.colorScheme = theme;
-
-        var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f1729' : '#f5ede1');
+        var metas = document.querySelectorAll('meta[name="theme-color"]');
+        metas.forEach(function(m) {
+          if (theme === 'dark' && m.media && m.media.includes('dark')) {
+            m.setAttribute('content', '#0d1422');
+          } else if (theme === 'light' && m.media && !m.media.includes('dark')) {
+            m.setAttribute('content', '#f5ede1');
+          }
+        });
       })();
     </script>
 
@@ -72,14 +104,24 @@
     <%= vite_javascript_tag 'application.jsx' %>
 
     <%= inertia_headers %>
-    
+
+    <%# ─── STRUCTURED DATA: MusicSchool ──────────────────────────────────── %>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "MusicSchool",
+      "@id": "https://shreesangeetaalaya.art/#organization",
       "name": "Shree Sangeetha Aalaya",
-      "description": "Premier Carnatic music school offering vocal and flute classes in Yelahanka, Bangalore",
+      "alternateName": "SSA Music School",
+      "description": "Premier Carnatic music school offering vocal and flute classes in Yelahanka, Bangalore. Online and offline batches for all ages.",
       "url": "https://shreesangeetaalaya.art",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://shreesangeetaalaya.art/icon.png",
+        "width": "512",
+        "height": "512"
+      },
+      "image": "https://shreesangeetaalaya.art/og-image.jpg",
       "telephone": "+91-9019382225",
       "email": "learnmusicwithvibhashree@gmail.com",
       "address": {
@@ -95,38 +137,85 @@
         "latitude": "13.1007",
         "longitude": "77.5963"
       },
-      "areaServed": ["Bangalore", "Yelahanka", "Jakkur", "Hebbal"],
+      "hasMap": "https://maps.google.com/?q=13.1007,77.5963",
+      "areaServed": [
+        { "@type": "City", "name": "Bangalore" },
+        { "@type": "Place", "name": "Yelahanka" },
+        { "@type": "Place", "name": "Jakkur" },
+        { "@type": "Place", "name": "Hebbal" },
+        { "@type": "Place", "name": "Devanahalli" }
+      ],
       "priceRange": "₹₹",
+      "currenciesAccepted": "INR",
+      "paymentAccepted": "Cash, UPI, Bank Transfer",
       "openingHours": "Mo-Su 09:00-20:00",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+          "opens": "09:00",
+          "closes": "20:00"
+        }
+      ],
       "sameAs": [
         "https://www.facebook.com/shreesangeetaalaya",
         "https://www.instagram.com/shreesangeetaalaya",
         "https://www.youtube.com/@shreesangeetaalaya"
-      ]
+      ],
+      "knowsAbout": ["Carnatic Music", "Classical Music", "Flute", "Vocal Music", "Music Education"],
+      "award": [],
+      "foundingDate": "2015",
+      "numberOfEmployees": { "@type": "QuantitativeValue", "value": "5" }
     }
     </script>
+
+    <%# ─── STRUCTURED DATA: LocalBusiness ───────────────────────────────── %>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "@id": "https://shreesangeetaalaya.art/#localbusiness",
+      "name": "Shree Sangeetha Aalaya",
+      "description": "Carnatic music school in Yelahanka offering vocal and flute lessons",
+      "url": "https://shreesangeetaalaya.art",
+      "telephone": "+91-9019382225",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Prestige Monte Carlo",
+        "addressLocality": "Yelahanka",
+        "addressRegion": "Karnataka",
+        "postalCode": "560064",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "13.1007",
+        "longitude": "77.5963"
+      },
+      "openingHours": "Mo-Su 09:00-20:00",
+      "priceRange": "₹₹"
+    }
+    </script>
+
+    <%# ─── STRUCTURED DATA: BreadcrumbList (page-specific) ─────────────── %>
+    <% if content_for?(:breadcrumbs) %>
+      <%= yield :breadcrumbs %>
+    <% end %>
   </head>
 
   <body class="antialiased">
     <%= yield %>
-    
+
+    <%# ─── SERVICE WORKER ─────────────────────────────────────────────────── %>
     <script>
       window.addEventListener('load', function() {
         if (!('serviceWorker' in navigator)) return;
-
         <% if Rails.env.production? %>
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(function(registration) {
-              console.log('SW registered: ', registration);
-            })
-            .catch(function(registrationError) {
-              console.log('SW registration failed: ', registrationError);
-            });
+          navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+            .catch(function() {});
         <% else %>
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            registrations.forEach(function(registration) {
-              registration.unregister();
-            });
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            regs.forEach(function(r) { r.unregister(); });
           });
         <% end %>
       });

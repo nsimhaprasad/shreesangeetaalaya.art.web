@@ -23,7 +23,7 @@ const Button = forwardRef(function Button(
     ghost: 'btn-ghost',
     danger: 'btn-danger',
     success: 'btn-success',
-    link: 'btn bg-transparent text-primary-600 hover:text-primary-700 hover:bg-primary-50',
+    link: 'btn bg-transparent underline-offset-4 hover:underline',
   }
 
   const sizes = {
@@ -77,16 +77,14 @@ export const IconButton = forwardRef(function IconButton(
     lg: 'p-2.5',
   }
 
-  const variants = {
-    ghost: 'text-gray-500 hover:text-gray-700 hover:bg-gray-100',
-    primary: 'bg-primary-100 text-primary-700 hover:bg-primary-200',
-    danger: 'text-rose-500 hover:text-rose-700 hover:bg-rose-100',
-  }
-
   return (
     <button
       ref={ref}
-      className={`rounded-lg transition-colors ${sizes[size]} ${variants[variant]} ${className}`}
+      className={`rounded-xl transition-all duration-150 flex items-center justify-center ${sizes[size]} ${className}`}
+      style={{
+        color: 'var(--app-text-muted)',
+        background: 'transparent',
+      }}
       aria-label={ariaLabel}
       {...props}
     >
@@ -95,6 +93,8 @@ export const IconButton = forwardRef(function IconButton(
   )
 })
 
-export const ButtonGroup = ({ children, className = '' }) => <div className={`flex -space-x-px ${className}`}>{children}</div>
+export const ButtonGroup = ({ children, className = '' }) => (
+  <div className={`flex -space-x-px ${className}`}>{children}</div>
+)
 
 export default Button

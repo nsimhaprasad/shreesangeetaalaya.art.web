@@ -2,14 +2,19 @@ import { useState } from 'react'
 
 export const Badge = ({ children, variant = 'default', size = 'md', dot = false, className = '' }) => {
   const variants = {
-    default: 'bg-gray-100 text-gray-700',
+    default: '',
     primary: 'badge-primary',
-    secondary: 'bg-secondary-100 text-secondary-700',
+    secondary: '',
     success: 'badge-success',
     warning: 'badge-warning',
     danger: 'badge-danger',
     info: 'badge-info',
-    gold: 'bg-gold-100 text-gold-800',
+    gold: 'badge-gold',
+  }
+
+  const inlineStyles = {
+    default: { background: 'color-mix(in srgb, var(--app-text-muted) 12%, transparent)', color: 'var(--app-text-muted)' },
+    secondary: { background: 'color-mix(in srgb, #6852a5 12%, transparent)', color: '#6852a5' },
   }
 
   const sizes = {
@@ -19,20 +24,20 @@ export const Badge = ({ children, variant = 'default', size = 'md', dot = false,
   }
 
   return (
-    <span className={`badge ${variants[variant]} ${sizes[size]} ${className}`}>
+    <span
+      className={`badge ${variants[variant]} ${sizes[size]} ${className}`}
+      style={inlineStyles[variant]}
+    >
       {dot && (
         <span
-          className={`mr-1.5 h-1.5 w-1.5 rounded-full ${
-            variant === 'success'
-              ? 'bg-emerald-500'
-              : variant === 'warning'
-                ? 'bg-amber-500'
-                : variant === 'danger'
-                  ? 'bg-rose-500'
-                  : variant === 'info'
-                    ? 'bg-sky-500'
-                    : 'bg-gray-500'
-          }`}
+          className="mr-1.5 h-1.5 w-1.5 rounded-full inline-block"
+          style={{
+            background: variant === 'success' ? 'var(--app-success)'
+              : variant === 'warning' ? 'var(--app-warning)'
+                : variant === 'danger' ? 'var(--app-danger)'
+                  : variant === 'info' ? 'var(--app-info)'
+                    : 'var(--app-text-muted)'
+          }}
         />
       )}
       {children}
@@ -95,7 +100,7 @@ export const AvatarGroup = ({ avatars = [], max = 4, size = 'md' }) => {
         <Avatar key={i} {...avatar} size={size} className="ring-2 ring-white/70" />
       ))}
       {remaining > 0 && (
-        <div className={`avatar ${size === 'md' ? 'avatar-md' : 'avatar-sm'} ring-2 ring-white/70 bg-gray-200 text-gray-700`}>+{remaining}</div>
+        <div className={`avatar ${size === 'md' ? 'avatar-md' : 'avatar-sm'} ring-2`} style={{ background: 'var(--app-surface-soft)', color: 'var(--app-text-muted)' }}>+{remaining}</div>
       )}
     </div>
   )
@@ -110,20 +115,27 @@ export const Progress = ({ value = 0, max = 100, size = 'md', color = 'primary',
     lg: 'h-3',
   }
 
-  const colors = {
-    primary: 'from-primary-500 to-primary-400',
-    success: 'from-emerald-500 to-emerald-400',
-    warning: 'from-amber-500 to-amber-400',
-    danger: 'from-rose-500 to-rose-400',
-    gold: 'from-gold-500 to-gold-400',
+  const colorStyles = {
+    primary: 'linear-gradient(90deg, var(--app-brand), color-mix(in srgb, var(--app-brand) 70%, #ffe08b))',
+    success: 'linear-gradient(90deg, var(--app-success), color-mix(in srgb, var(--app-success) 75%, #a7f3d0))',
+    warning: 'linear-gradient(90deg, var(--app-warning), color-mix(in srgb, var(--app-warning) 75%, #fde68a))',
+    danger: 'linear-gradient(90deg, var(--app-danger), color-mix(in srgb, var(--app-danger) 70%, #fca5a5))',
+    gold: 'linear-gradient(90deg, #e3af11, #ffe04b)',
   }
 
   return (
     <div className={className}>
       <div className={`progress ${sizes[size]}`}>
-        <div className={`progress-bar bg-gradient-to-r ${colors[color]}`} style={{ width: `${percentage}%` }} />
+        <div
+          className="progress-bar"
+          style={{ width: `${percentage}%`, background: colorStyles[color] || colorStyles.primary }}
+        />
       </div>
-      {showLabel && <p className="mt-1 text-right text-xs text-gray-500">{Math.round(percentage)}%</p>}
+      {showLabel && (
+        <p className="mt-1 text-right text-xs" style={{ color: 'var(--app-text-muted)' }}>
+          {Math.round(percentage)}%
+        </p>
+      )}
     </div>
   )
 }
@@ -143,7 +155,12 @@ export const Skeleton = ({ className = '', variant = 'text', width, height }) =>
 
 export const EmptyState = ({ icon, title, description, action, className = '' }) => (
   <div className={`py-12 text-center ${className}`}>
-    {icon && <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400">{icon}</div>}
+    {icon && (
+      <div
+        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+        style={{ background: 'var(--app-surface-soft)', color: 'var(--app-text-soft)' }}
+      >{icon}</div>
+    )}
     <h3 className="mb-1 text-lg font-semibold" style={{ color: 'var(--app-text)' }}>
       {title}
     </h3>

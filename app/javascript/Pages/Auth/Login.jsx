@@ -248,8 +248,9 @@ export default function Login() {
         </motion.div>
 
         {/* Right Side - Login Form */}
-        <motion.div 
-          className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50"
+        <motion.div
+          className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12"
+          style={{ background: 'var(--app-bg)' }}
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -267,26 +268,29 @@ export default function Login() {
               >
                 <span className="text-xl font-bold">श</span>
               </motion.div>
-              <span className="text-xl font-display font-semibold text-gray-900">Shree Sangeetha Aalaya</span>
+              <span className="text-xl font-display font-semibold" style={{ color: 'var(--app-text)' }}>Shree Sangeetha Aalaya</span>
             </motion.div>
 
-            <motion.div 
-              className="bg-white rounded-2xl shadow-soft p-8"
+            <motion.div
+              className="rounded-2xl p-8"
+              style={{ background: 'var(--app-surface)', border: '1px solid var(--app-border)', boxShadow: 'var(--shadow-elevated)' }}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
               <div className="text-center mb-8">
-                <motion.h2 
-                  className="text-2xl font-display font-bold text-gray-900"
+                <motion.h2
+                  className="text-2xl font-display font-bold"
+                  style={{ color: 'var(--app-text)' }}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
                 >
                   Welcome back
                 </motion.h2>
-                <motion.p 
-                  className="text-gray-500 mt-1"
+                <motion.p
+                  className="mt-1 text-sm"
+                  style={{ color: 'var(--app-text-muted)' }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
@@ -298,7 +302,8 @@ export default function Login() {
               {/* Google Sign In Button */}
               <motion.button
                 onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 mb-6"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 mb-6"
+              style={{ border: '1px solid var(--app-border)', color: 'var(--app-text)', background: 'var(--app-surface-soft)' }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, y: 20 }}
@@ -317,10 +322,10 @@ export default function Login() {
                 transition={{ delay: 0.6 }}
               >
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
+                  <div className="w-full border-t" style={{ borderColor: 'var(--app-border)' }}></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+                  <span className="px-2 text-xs" style={{ background: 'var(--app-surface)', color: 'var(--app-text-muted)' }}>Or continue with email</span>
                 </div>
               </motion.div>
 
@@ -371,7 +376,8 @@ export default function Login() {
                   <motion.button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-9 transition-colors"
+                    style={{ color: 'var(--app-text-soft)' }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
@@ -446,12 +452,13 @@ export default function Login() {
               </form>
 
               <motion.div 
-                className="mt-6 pt-6 border-t border-gray-100"
+                className="mt-6 pt-6 border-t"
+              style={{ borderColor: 'var(--app-border)' }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
               >
-                <p className="text-center text-sm text-gray-500">
+                <p className="text-center text-sm" style={{ color: 'var(--app-text-muted)' }}>
                   New student?{' '}
                   <Link href="/" className="text-primary-600 hover:text-primary-700 font-medium transition-colors">
                     Contact us to enroll
@@ -460,8 +467,9 @@ export default function Login() {
               </motion.div>
             </motion.div>
 
-            <motion.p 
-              className="text-center text-xs text-gray-400 mt-6"
+            <motion.p
+              className="text-center text-xs mt-6"
+              style={{ color: 'var(--app-text-soft)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}

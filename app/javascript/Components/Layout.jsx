@@ -16,7 +16,7 @@ export default function Layout({ children }) {
         <div className="flex">
           <Sidebar user={auth?.user} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
-          <main className="flex-1 min-h-[calc(100vh-4.2rem)] lg:ml-64">
+          <main className="flex-1 min-h-[calc(100vh-4.2rem)] lg:ml-64 transition-all duration-300">
             <div className="app-page">
               {flash && Object.keys(flash).length > 0 && <FlashMessages flash={flash} />}
               {children}
@@ -32,7 +32,6 @@ function FlashMessages({ flash }) {
   if (!flash) return null
 
   const messages = []
-
   if (flash.success) messages.push({ type: 'success', message: flash.success })
   if (flash.error) messages.push({ type: 'error', message: flash.error })
   if (flash.notice) messages.push({ type: 'info', message: flash.notice })
@@ -50,56 +49,66 @@ function FlashMessages({ flash }) {
 }
 
 function FlashMessage({ type, message }) {
-  const palette = {
+  const [visible, setVisible] = useState(true)
+  if (!visible) return null
+
+  const config = {
     success: {
-      borderColor: 'color-mix(in srgb, var(--app-success) 35%, var(--app-border))',
-      background: 'color-mix(in srgb, var(--app-success) 14%, transparent)',
-      color: 'var(--app-text)',
+      icon: (
+        <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      ),
+      color: 'var(--app-success)',
     },
     error: {
-      borderColor: 'color-mix(in srgb, var(--app-danger) 35%, var(--app-border))',
-      background: 'color-mix(in srgb, var(--app-danger) 14%, transparent)',
-      color: 'var(--app-text)',
+      icon: (
+        <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      ),
+      color: 'var(--app-danger)',
     },
     info: {
-      borderColor: 'color-mix(in srgb, var(--app-info) 35%, var(--app-border))',
-      background: 'color-mix(in srgb, var(--app-info) 14%, transparent)',
-      color: 'var(--app-text)',
+      icon: (
+        <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      color: 'var(--app-info)',
     },
     warning: {
-      borderColor: 'color-mix(in srgb, var(--app-warning) 35%, var(--app-border))',
-      background: 'color-mix(in srgb, var(--app-warning) 14%, transparent)',
-      color: 'var(--app-text)',
+      icon: (
+        <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      ),
+      color: 'var(--app-warning)',
     },
   }
 
-  const icons = {
-    success: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-      </svg>
-    ),
-    error: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    ),
-    info: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-    warning: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-    ),
-  }
+  const { icon, color } = config[type] || config.info
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border px-4 py-3 animate-slide-up" style={palette[type]}>
-      {icons[type]}
-      <p className="text-sm font-semibold">{message}</p>
+    <div
+      className="flex items-center gap-3 rounded-xl border px-4 py-3 animate-slide-up"
+      style={{
+        borderColor: `color-mix(in srgb, ${color} 30%, var(--app-border))`,
+        background: `color-mix(in srgb, ${color} 10%, var(--app-surface))`,
+      }}
+    >
+      <span style={{ color }}>{icon}</span>
+      <p className="flex-1 text-sm font-medium" style={{ color: 'var(--app-text)' }}>{message}</p>
+      <button
+        onClick={() => setVisible(false)}
+        className="rounded-lg p-1 transition-colors"
+        style={{ color: 'var(--app-text-muted)' }}
+        aria-label="Dismiss"
+      >
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
     </div>
   )
 }

@@ -284,11 +284,12 @@
     letter-spacing: 0.02em;
   }
 
-  .badge-primary { @apply bg-primary-100 text-primary-800; }
-  .badge-success { @apply bg-emerald-100 text-emerald-800; }
-  .badge-warning { @apply bg-amber-100 text-amber-800; }
-  .badge-danger { @apply bg-rose-100 text-rose-800; }
-  .badge-info { @apply bg-sky-100 text-sky-800; }
+  .badge-primary { background: color-mix(in srgb, var(--app-brand) 16%, transparent); color: var(--app-brand); }
+  .badge-success { background: color-mix(in srgb, var(--app-success) 14%, transparent); color: var(--app-success); }
+  .badge-warning { background: color-mix(in srgb, var(--app-warning) 14%, transparent); color: var(--app-warning); }
+  .badge-danger { background: color-mix(in srgb, var(--app-danger) 14%, transparent); color: var(--app-danger); }
+  .badge-info { background: color-mix(in srgb, var(--app-info) 14%, transparent); color: var(--app-info); }
+  .badge-gold { background: color-mix(in srgb, #e3af11 14%, transparent); color: #c4880d; }
 
   .input {
     @apply w-full rounded-xl border px-4 py-2.5 text-sm transition-all duration-200;
@@ -547,15 +548,66 @@
   .app-shell .bg-gray-100 { background-color: color-mix(in srgb, var(--app-surface-soft) 72%, transparent) !important; }
   .app-shell .text-gray-900 { color: var(--app-text) !important; }
   .app-shell .text-gray-800 { color: color-mix(in srgb, var(--app-text) 88%, white) !important; }
-  .app-shell .text-gray-700 { color: color-mix(in srgb, var(--app-text) 70%, white) !important; }
+  .app-shell .text-gray-700 { color: color-mix(in srgb, var(--app-text) 75%, transparent) !important; }
   .app-shell .text-gray-600,
   .app-shell .text-gray-500,
   .app-shell .text-gray-400 { color: var(--app-text-muted) !important; }
   .app-shell .border-gray-100,
   .app-shell .border-gray-200,
   .app-shell .border-gray-300 { border-color: var(--app-border) !important; }
+  .app-shell .divide-gray-100 > * + * { border-color: var(--app-border) !important; }
   .app-shell .hover\:bg-gray-50:hover,
   .app-shell .hover\:bg-gray-100:hover { background-color: color-mix(in srgb, var(--app-surface-soft) 92%, transparent) !important; }
+
+  /* Dark mode: override any hardcoded light colors in components */
+  [data-theme='dark'] .shadow-soft { box-shadow: 0 20px 40px -30px rgba(0, 0, 0, 0.6); }
+  [data-theme='dark'] .card, [data-theme='dark'] .card-elevated { box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -16px rgba(0,0,0,0.5); }
+
+  /* Animated page entry */
+  .page-enter { animation: var(--animate-fade-in); }
+
+  /* Premium focus ring */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-brand) 40%, transparent);
+  }
+
+  /* Hover card lift */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Notification dot */
+  .notification-dot::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: var(--app-danger);
+    border-radius: 50%;
+    border: 2px solid var(--app-nav-bg);
+  }
+
+  /* Section header */
+  .section-header {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--app-border);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Stat card glow on hover */
+  .stat-card:hover {
+    border-color: color-mix(in srgb, var(--app-brand) 30%, var(--app-border));
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--app-brand) 10%, transparent), var(--shadow-soft);
+    transition: all 0.25s ease;
+  }
 }
 
 @layer utilities {
