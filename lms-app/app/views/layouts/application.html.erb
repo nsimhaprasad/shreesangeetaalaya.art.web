@@ -1,9 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title><%= content_for(:title) || "Shree Sangeetha Aalaya LMS" %></title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ed7612">
+    
+    <title><%= content_for(:title) || "Shree Sangeetha Aalaya - Carnatic Music Institution" %></title>
+    
+    <meta name="description" content="<%= content_for(:description) || 'Learn Carnatic vocal and flute music from expert teachers. Shree Sangeetha Aalaya offers online & offline classes in Yelahanka, Bangalore. Enroll for a free demo!' %>">
+    <meta name="keywords" content="<%= content_for(:keywords) || 'carnatic music classes, music school yelahanka, flute classes bangalore, carnatic vocal lessons, online music classes, classical music training' %>">
+    <meta name="author" content="Shree Sangeetha Aalaya">
+    <meta name="robots" content="<%= content_for(:robots) || 'index, follow' %>">
+    
+    <link rel="canonical" href="<%= content_for(:canonical) || request.original_url %>">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:title" content="<%= content_for(:og_title) || content_for(:title) || 'Shree Sangeetha Aalaya - Carnatic Music Institution' %>">
+    <meta property="og:description" content="<%= content_for(:og_description) || content_for(:description) || 'Learn Carnatic vocal and flute music from expert teachers.' %>">
+    <meta property="og:image" content="<%= content_for(:og_image) || asset_url('og-image.jpg') %>">
+    <meta property="og:locale" content="en_IN">
+    <meta property="og:site_name" content="Shree Sangeetha Aalaya">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<%= request.original_url %>">
+    <meta name="twitter:title" content="<%= content_for(:twitter_title) || content_for(:title) || 'Shree Sangeetha Aalaya' %>">
+    <meta name="twitter:description" content="<%= content_for(:twitter_description) || content_for(:description) || 'Learn Carnatic music from expert teachers.' %>">
+    <meta name="twitter:image" content="<%= content_for(:twitter_image) || asset_url('twitter-card.jpg') %>">
+    
+    <meta name="geo.region" content="IN-KA">
+    <meta name="geo.placename" content="Yelahanka, Bangalore">
+    <meta name="geo.position" content="13.1007;77.5963">
+    <meta name="ICBM" content="13.1007, 77.5963">
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -13,6 +44,10 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
@@ -21,9 +56,56 @@
     <%= vite_javascript_tag 'application.jsx' %>
 
     <%= inertia_headers %>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicSchool",
+      "name": "Shree Sangeetha Aalaya",
+      "description": "Premier Carnatic music school offering vocal and flute classes in Yelahanka, Bangalore",
+      "url": "https://shreesangeetaalaya.art",
+      "telephone": "+91-9019382225",
+      "email": "learnmusicwithvibhashree@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Prestige Monte Carlo",
+        "addressLocality": "Yelahanka",
+        "addressRegion": "Karnataka",
+        "postalCode": "560064",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "13.1007",
+        "longitude": "77.5963"
+      },
+      "areaServed": ["Bangalore", "Yelahanka", "Jakkur", "Hebbal"],
+      "priceRange": "₹₹",
+      "openingHours": "Mo-Su 09:00-20:00",
+      "sameAs": [
+        "https://www.facebook.com/shreesangeetaalaya",
+        "https://www.instagram.com/shreesangeetaalaya",
+        "https://www.youtube.com/@shreesangeetaalaya"
+      ]
+    }
+    </script>
   </head>
 
-  <body>
+  <body class="antialiased">
     <%= yield %>
+    
+    <script>
+      window.addEventListener('load', function() {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(function(registration) {
+              console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+              console.log('SW registration failed: ', registrationError);
+            });
+        }
+      });
+    </script>
   </body>
 </html>

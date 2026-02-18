@@ -1,7 +1,5 @@
 import { createInertiaApp } from '@inertiajs/react'
 import { createRoot } from 'react-dom/client'
-
-// Import Tailwind CSS
 import '../assets/stylesheets/application.tailwind.css'
 
 createInertiaApp({
@@ -13,8 +11,10 @@ createInertiaApp({
     createRoot(el).render(<App {...props} />)
   },
   progress: {
-    color: '#4B5563',
+    color: '#ed7612',
     showSpinner: true,
   },
-  title: (title) => title ? `${title} - Shree Sangeetha Aalaya LMS` : 'Shree Sangeetha Aalaya LMS',
+  title: (title) => title 
+    ? `${title} | Shree Sangeetha Aalaya` 
+    : 'Shree Sangeetha Aalaya - Carnatic Music Institution',
 })

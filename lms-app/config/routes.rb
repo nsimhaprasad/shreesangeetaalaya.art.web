@@ -147,8 +147,9 @@ Rails.application.routes.draw do
     get "progress", to: "progress#index"
   end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get "robots.txt", to: "seo#robots"
+  get "sitemap.xml", to: "seo#sitemap"
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/*

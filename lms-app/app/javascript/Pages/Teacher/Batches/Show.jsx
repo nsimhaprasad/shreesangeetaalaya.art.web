@@ -1,271 +1,234 @@
-import { Head, Link, useForm } from '@inertiajs/react'
-import Layout from '@components/Layout'
+import { Head, Link, router } from '@inertiajs/react'
 import { useState } from 'react'
+import Layout from '@components/Layout'
+import { 
+  Card, CardTitle, Button, Badge, Avatar, StatusBadge, Progress,
+  ConfirmModal, EmptyState, StatCard 
+} from '@components/UI'
+
+const icons = {
+  arrowLeft: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+  ),
+  edit: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+  ),
+  calendar: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  ),
+  plus: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  ),
+  trash: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+    </svg>
+  )
+}
 
 export default function BatchShow({ batch }) {
-  const [showAddStudentModal, setShowAddStudentModal] = useState(false)
-  const { delete: destroy } = useForm()
+  const [removeModal, setRemoveModal] = useState({ open: false, student: null })
 
-  const getStatusBadgeColor = (status) => {
-    const colors = {
-      active: 'bg-green-100 text-green-800',
-      draft: 'bg-gray-100 text-gray-800',
-      completed: 'bg-blue-100 text-blue-800',
-      cancelled: 'bg-red-100 text-red-800',
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
-  }
-
-  const handleRemoveStudent = (enrollmentId) => {
-    if (confirm('Are you sure you want to remove this student from the batch?')) {
-      destroy(`/teacher/batches/${batch.id}/batch_enrollments/${enrollmentId}`)
+  const handleRemoveStudent = () => {
+    if (removeModal.student) {
+      router.delete(`/teacher/batches/${batch?.id}/batch_enrollments/${removeModal.student.enrollment_id}`)
+      setRemoveModal({ open: false, student: null })
     }
   }
+
+  const capacityPercentage = batch?.max_students 
+    ? ((batch?.enrollment_count || 0) / batch.max_students) * 100 
+    : 0
 
   return (
     <Layout>
-      <Head title={batch.name} />
+      <Head title={batch?.name || 'Batch'} />
 
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <Link
-              href="/teacher/batches"
-              className="text-blue-600 hover:text-blue-800 mb-2 inline-block"
-            >
-              ← Back to Batches
-            </Link>
-            <h1 className="text-3xl font-bold text-gray-900">{batch.name}</h1>
-            <p className="text-gray-600 mt-1">{batch.course.name}</p>
+        <div className="flex items-center gap-4">
+          <Link href="/teacher/batches" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            {icons.arrowLeft}
+          </Link>
+          <div className="flex-1">
+            <h1 className="text-2xl font-display font-bold text-gray-900">{batch?.name}</h1>
+            <p className="text-gray-500 text-sm">{batch?.course?.name}</p>
           </div>
-          <div className="flex space-x-3">
-            <Link
-              href={`/teacher/batches/${batch.id}/edit`}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-            >
-              Edit Batch
+          <div className="flex gap-2">
+            <Link href={`/teacher/batches/${batch?.id}/edit`} className="btn-outline">
+              {icons.edit}
+              <span className="hidden sm:inline">Edit</span>
             </Link>
-            <Link
-              href="/teacher/class_sessions/new_recurring"
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors"
-            >
-              Schedule Classes
+            <Link href={`/teacher/class_sessions/new?batch_id=${batch?.id}`} className="btn-primary">
+              {icons.calendar}
+              <span className="hidden sm:inline">Schedule</span>
             </Link>
           </div>
         </div>
 
-        {/* Batch Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <p className="text-sm text-gray-600">Status</p>
-            <span
-              className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
-                batch.status
-              )}`}
-            >
-              {batch.status}
-            </span>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <p className="text-sm text-gray-600">Class Type</p>
-            <p className="mt-2 text-lg font-semibold text-gray-900">
-              {batch.class_type === 'one_on_one' ? '1-on-1' : 'Group'}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <p className="text-sm text-gray-600">Enrollment</p>
-            <p className="mt-2 text-lg font-semibold text-gray-900">
-              {batch.enrollment_count}
-              {batch.max_students && ` / ${batch.max_students}`}
-            </p>
-            {batch.available_seats !== null && (
-              <p className="text-xs text-gray-500 mt-1">
-                {batch.available_seats} seats available
-              </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="text-center">
+            <p className="text-sm text-gray-500 mb-1">Status</p>
+            <StatusBadge status={batch?.status} />
+          </Card>
+          <Card className="text-center">
+            <p className="text-sm text-gray-500 mb-1">Type</p>
+            <p className="font-semibold">{batch?.class_type === 'one_on_one' ? '1-on-1' : 'Group'}</p>
+          </Card>
+          <Card className="text-center">
+            <p className="text-sm text-gray-500 mb-1">Students</p>
+            <p className="font-semibold">{batch?.enrollment_count || 0}{batch?.max_students ? ` / ${batch.max_students}` : ''}</p>
+            {batch?.max_students && (
+              <Progress value={batch.enrollment_count || 0} max={batch.max_students} size="sm" className="mt-2" />
             )}
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <p className="text-sm text-gray-600">Current Fee</p>
-            <p className="mt-2 text-lg font-semibold text-green-700">
-              {batch.fee_structure
-                ? `₹${batch.fee_structure.amount}`
-                : 'Not set'}
+          </Card>
+          <Card className="text-center">
+            <p className="text-sm text-gray-500 mb-1">Fee</p>
+            <p className="font-semibold text-green-600">
+              {batch?.fee_structure ? `₹${batch.fee_structure.amount}` : 'Not set'}
             </p>
-            {batch.fee_structure && (
-              <p className="text-xs text-gray-500 mt-1">
-                {batch.fee_structure.fee_type}
-              </p>
-            )}
-          </div>
+          </Card>
         </div>
 
-        {/* Batch Details */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Batch Details</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">Teacher</p>
-              <p className="mt-1 font-medium text-gray-900">{batch.teacher.name}</p>
-              <p className="text-sm text-gray-500">{batch.teacher.specialization}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Schedule</p>
-              <p className="mt-1 font-medium text-gray-900">
-                {batch.schedule || 'Not set'}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Start Date</p>
-              <p className="mt-1 font-medium text-gray-900">{batch.start_date}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">End Date</p>
-              <p className="mt-1 font-medium text-gray-900">
-                {batch.end_date || 'Ongoing'}
-              </p>
-            </div>
-            {batch.description && (
-              <div className="col-span-2">
-                <p className="text-sm text-gray-600">Description</p>
-                <p className="mt-1 text-gray-900">{batch.description}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Card padding={false}>
+              <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between">
+                <CardTitle className="mb-0">Students ({batch?.students?.length || 0})</CardTitle>
+                <Button size="sm">
+                  {icons.plus}
+                  Add Student
+                </Button>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Students Roster */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Students ({batch.students.length})
-            </h2>
-            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
-              + Add Student
-            </button>
-          </div>
-
-          {batch.students.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No students enrolled yet</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Enrollment Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+              {batch?.students && batch.students.length > 0 ? (
+                <div className="divide-y divide-gray-100">
                   {batch.students.map((student) => (
-                    <tr key={student.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {student.name}
+                    <div key={student.id} className="flex items-center justify-between p-4 sm:p-5 hover:bg-gray-50">
+                      <div className="flex items-center gap-3">
+                        <Avatar name={student.name} size="md" />
+                        <div>
+                          <p className="font-medium text-gray-900">{student.name}</p>
+                          <p className="text-sm text-gray-500">{student.email}</p>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{student.email}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{student.phone}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">
-                          {student.enrollment_date}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          {student.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => handleRemoveStudent(student.enrollment_id)}
-                          className="text-red-600 hover:text-red-900"
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <StatusBadge status={student.status} />
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setRemoveModal({ open: true, student })}
                         >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
+                          {icons.trash}
+                        </Button>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                </div>
+              ) : (
+                <EmptyState
+                  title="No students enrolled"
+                  description="Add students to this batch to get started"
+                />
+              )}
+            </Card>
 
-        {/* Upcoming Sessions */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Upcoming Sessions
-            </h2>
-            <Link
-              href="/teacher/class_sessions"
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-            >
-              View All Sessions →
-            </Link>
+            <Card padding={false}>
+              <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between">
+                <CardTitle className="mb-0">Upcoming Sessions</CardTitle>
+                <Link href={`/teacher/class_sessions?batch_id=${batch?.id}`} className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                  View all
+                </Link>
+              </div>
+              {batch?.upcoming_sessions && batch.upcoming_sessions.length > 0 ? (
+                <div className="divide-y divide-gray-100">
+                  {batch.upcoming_sessions.slice(0, 5).map((session) => (
+                    <div key={session.id} className="flex items-center justify-between p-4 sm:p-5">
+                      <div>
+                        <p className="font-medium text-gray-900">{session.topic || 'Class Session'}</p>
+                        <p className="text-sm text-gray-500">{session.class_date} at {session.class_time}</p>
+                      </div>
+                      <StatusBadge status={session.status} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  title="No upcoming sessions"
+                  description="Schedule class sessions for this batch"
+                  action={
+                    <Link href={`/teacher/class_sessions/new?batch_id=${batch?.id}`} className="btn-primary">
+                      Schedule Session
+                    </Link>
+                  }
+                />
+              )}
+            </Card>
           </div>
 
-          {batch.upcoming_sessions.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">No upcoming sessions scheduled</p>
-              <Link
-                href={`/teacher/class_sessions/new?batch_id=${batch.id}`}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-              >
-                Schedule a Session
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {batch.upcoming_sessions.map((session) => (
-                <div
-                  key={session.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-md"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {session.topic || 'Class Session'}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {session.class_date} at {session.class_time}
-                      {session.duration_minutes &&
-                        ` (${session.duration_minutes} mins)`}
-                    </p>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
-                      session.status
-                    )}`}
-                  >
-                    {session.status}
-                  </span>
+          <div className="space-y-6">
+            <Card>
+              <CardTitle>Batch Details</CardTitle>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <p className="text-sm text-gray-500">Teacher</p>
+                  <p className="font-medium text-gray-900">{batch?.teacher?.name}</p>
                 </div>
-              ))}
-            </div>
-          )}
+                <div>
+                  <p className="text-sm text-gray-500">Schedule</p>
+                  <p className="font-medium text-gray-900">{batch?.schedule || 'Not set'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Duration</p>
+                  <p className="font-medium text-gray-900">
+                    {batch?.start_date}{batch?.end_date ? ` - ${batch.end_date}` : ' - Ongoing'}
+                  </p>
+                </div>
+                {batch?.description && (
+                  <div>
+                    <p className="text-sm text-gray-500">Description</p>
+                    <p className="text-gray-700">{batch.description}</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-primary-500 to-primary-600 text-white">
+              <h3 className="font-semibold mb-2">Quick Actions</h3>
+              <div className="space-y-2">
+                <Link 
+                  href={`/teacher/attendances?batch_id=${batch?.id}`}
+                  className="block w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm text-center transition-colors"
+                >
+                  Mark Attendance
+                </Link>
+                <Link 
+                  href={`/teacher/payments/new?batch_id=${batch?.id}`}
+                  className="block w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm text-center transition-colors"
+                >
+                  Record Payment
+                </Link>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={removeModal.open}
+        onClose={() => setRemoveModal({ open: false, student: null })}
+        onConfirm={handleRemoveStudent}
+        title="Remove Student"
+        message={`Remove ${removeModal.student?.name} from this batch?`}
+        confirmText="Remove"
+        variant="danger"
+      />
     </Layout>
   )
 }

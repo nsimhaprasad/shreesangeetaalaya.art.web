@@ -1,13 +1,25 @@
-# Email Configuration
-# This initializer sets up email delivery based on environment variables
-# See .env.example for all available configuration options
+# Email Configuration for Shree Sangeetha Aalaya
+# Supports Brevo (free tier: 300 emails/day) and other providers
 
 if Rails.env.development? || Rails.env.production?
-  email_provider = ENV.fetch('EMAIL_PROVIDER', 'smtp').downcase
-
+  email_provider = ENV.fetch('EMAIL_PROVIDER', 'brevo').downcase
+  
   case email_provider
+  when 'brevo'
+    Rails.application.config.action_mailer.delivery_method = :smtp
+    Rails.application.config.action_mailer.smtp_settings = {
+      address: 'smtp-relay.brevo.com',
+      port: 587,
+      domain: ENV.fetch('SMTP_DOMAIN', 'shreesangeetaalaya.art'),
+      user_name: ENV.fetch('BREVO_SMTP_LOGIN', ''),
+      password: ENV.fetch('BREVO_SMTP_KEY', ENV.fetch('BREVO_API_KEY', '')),
+      authentication: 'login',
+      enable_starttls_auto: true,
+      open_timeout: 5,
+      read_timeout: 5
+    }
+
   when 'smtp'
-    # Generic SMTP configuration (works with Gmail, custom SMTP servers, etc.)
     Rails.application.config.action_mailer.delivery_method = :smtp
     Rails.application.config.action_mailer.smtp_settings = {
       address: ENV.fetch('SMTP_ADDRESS', 'smtp.gmail.com'),
@@ -20,7 +32,6 @@ if Rails.env.development? || Rails.env.production?
     }
 
   when 'sendgrid'
-    # SendGrid configuration
     Rails.application.config.action_mailer.delivery_method = :smtp
     Rails.application.config.action_mailer.smtp_settings = {
       address: 'smtp.sendgrid.net',
@@ -33,7 +44,6 @@ if Rails.env.development? || Rails.env.production?
     }
 
   when 'mailgun'
-    # Mailgun configuration
     Rails.application.config.action_mailer.delivery_method = :smtp
     Rails.application.config.action_mailer.smtp_settings = {
       address: 'smtp.mailgun.org',
@@ -44,38 +54,27 @@ if Rails.env.development? || Rails.env.production?
       authentication: 'plain',
       enable_starttls_auto: true
     }
-
-  when 'aws_ses'
-    # AWS SES configuration
-    Rails.application.config.action_mailer.delivery_method = :smtp
-    Rails.application.config.action_mailer.smtp_settings = {
-      address: "email-smtp.#{ENV.fetch('AWS_REGION', 'us-east-1')}.amazonaws.com",
-      port: 587,
-      user_name: ENV['AWS_ACCESS_KEY_ID'],
-      password: ENV['AWS_SECRET_ACCESS_KEY'],
-      authentication: 'plain',
-      enable_starttls_auto: true
-    }
   end
 
-  # Common settings for all environments
-  Rails.application.config.action_mailer.perform_deliveries =
-    ENV.fetch('EMAIL_DELIVERY_ENABLED', 'false').downcase == 'true'
+  Rails.application.config.action_mailer.perform_deliveries = 
+    ENV.fetch('EMAIL_DELIVERY_ENABLED', Rails.env.production?.to_s).downcase == 'true'
 
   Rails.application.config.action_mailer.raise_delivery_errors = true
   Rails.application.config.action_mailer.default_url_options = {
-    host: ENV.fetch('APP_HOST', 'localhost'),
-    port: ENV.fetch('APP_PORT', '3000')
+    host: ENV.fetch('APP_HOST', 'localhost:3000'),
+    protocol: Rails.env.production? ? 'https' : 'http'
   }
 
-  # Use :async for background delivery (default Rails behavior)
-  # For production, consider using Sidekiq with deliver_later
   Rails.application.config.action_mailer.delivery_job = "ActionMailer::MailDeliveryJob"
 
-  Rails.logger.info "=" * 80
-  Rails.logger.info "Email Configuration Loaded"
-  Rails.logger.info "Provider: #{email_provider}"
+  Rails.logger.info "=" * 60
+  Rails.logger.info "Email Configuration: #{email_provider.upcase}"
   Rails.logger.info "Delivery Enabled: #{Rails.application.config.action_mailer.perform_deliveries}"
   Rails.logger.info "From: #{ENV.fetch('EMAIL_FROM_ADDRESS', 'noreply@shreesangeetaalaya.art')}"
-  Rails.logger.info "=" * 80
+  Rails.logger.info "=" * 60
+end
+
+if Rails.env.development?
+  Rails.application.config.action_mailer.delivery_method = :letter_opener
+  Rails.application.config.action_mailer.perform_deliveries = true
 end

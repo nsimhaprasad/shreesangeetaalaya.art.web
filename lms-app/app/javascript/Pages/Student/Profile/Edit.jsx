@@ -1,5 +1,14 @@
 import { Head, Link, useForm } from '@inertiajs/react'
 import Layout from '@components/Layout'
+import { Card, Button, Input, Select, TextArea } from '@components/UI'
+
+const icons = {
+  arrowLeft: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+  )
+}
 
 export default function StudentProfileEdit({ student = {} }) {
   const { data, setData, put, processing, errors } = useForm({
@@ -24,370 +33,219 @@ export default function StudentProfileEdit({ student = {} }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    put('/student/profile', {
-      preserveScroll: true,
-      onSuccess: () => {
-        // Success message will be handled by flash messages
-      }
-    })
+    put('/student/profile', { preserveScroll: true })
   }
+
+  const genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' },
+    { value: 'prefer_not_to_say', label: 'Prefer not to say' }
+  ]
+
+  const relationshipOptions = [
+    { value: 'parent', label: 'Parent' },
+    { value: 'guardian', label: 'Guardian' },
+    { value: 'spouse', label: 'Spouse' },
+    { value: 'sibling', label: 'Sibling' },
+    { value: 'other', label: 'Other' }
+  ]
 
   return (
     <Layout>
       <Head title="Edit Profile" />
 
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Edit Profile</h1>
-          <Link
-            href="/student/profile"
-            className="text-gray-600 hover:text-gray-800 font-medium"
-          >
-            Cancel
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <Link href="/student/profile" className="text-gray-500 hover:text-gray-700">
+            {icons.arrowLeft}
           </Link>
+          <div>
+            <h1 className="text-2xl font-display font-bold text-gray-900">Edit Profile</h1>
+            <p className="text-gray-500 text-sm mt-1">Update your personal information</p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Personal Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b pb-3">
-              Personal Information
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="name"
+          <Card>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Full Name"
+                  name="name"
                   value={data.name}
-                  onChange={e => setData('name', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('name', e.target.value)}
+                  error={errors.name}
                   required
                 />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
+                <Input
                   type="email"
-                  id="email"
+                  label="Email"
+                  name="email"
                   value={data.email}
-                  onChange={e => setData('email', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('email', e.target.value)}
+                  error={errors.email}
                   required
                 />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                )}
               </div>
-
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <input
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
                   type="tel"
-                  id="phone"
+                  label="Phone Number"
+                  name="phone"
                   value={data.phone}
-                  onChange={e => setData('phone', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('phone', e.target.value)}
+                  error={errors.phone}
                 />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="date_of_birth" className="block text-sm font-medium text-gray-700 mb-2">
-                  Date of Birth
-                </label>
-                <input
+                <Input
                   type="date"
-                  id="date_of_birth"
+                  label="Date of Birth"
+                  name="date_of_birth"
                   value={data.date_of_birth}
-                  onChange={e => setData('date_of_birth', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.date_of_birth ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('date_of_birth', e.target.value)}
+                  error={errors.date_of_birth}
                 />
-                {errors.date_of_birth && (
-                  <p className="mt-1 text-sm text-red-600">{errors.date_of_birth}</p>
-                )}
               </div>
-
-              <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
-                </label>
-                <select
-                  id="gender"
-                  value={data.gender}
-                  onChange={e => setData('gender', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.gender ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                  <option value="prefer_not_to_say">Prefer not to say</option>
-                </select>
-                {errors.gender && (
-                  <p className="mt-1 text-sm text-red-600">{errors.gender}</p>
-                )}
-              </div>
+              <Select
+                label="Gender"
+                name="gender"
+                value={data.gender}
+                onChange={(e) => setData('gender', e.target.value)}
+                options={genderOptions}
+                placeholder="Select Gender"
+                error={errors.gender}
+              />
             </div>
-          </div>
+          </Card>
 
-          {/* Contact Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b pb-3">
-              Contact Information
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                  Address
-                </label>
-                <textarea
-                  id="address"
-                  value={data.address}
-                  onChange={e => setData('address', e.target.value)}
-                  rows={3}
-                  className={`w-full px-4 py-2 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-                {errors.address && (
-                  <p className="mt-1 text-sm text-red-600">{errors.address}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="city"
+          <Card>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+            <div className="space-y-4">
+              <TextArea
+                label="Address"
+                name="address"
+                value={data.address}
+                onChange={(e) => setData('address', e.target.value)}
+                error={errors.address}
+                rows={2}
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="City"
+                  name="city"
                   value={data.city}
-                  onChange={e => setData('city', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.city ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('city', e.target.value)}
+                  error={errors.city}
                 />
-                {errors.city && (
-                  <p className="mt-1 text-sm text-red-600">{errors.city}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
-                  State
-                </label>
-                <input
-                  type="text"
-                  id="state"
+                <Input
+                  label="State"
+                  name="state"
                   value={data.state}
-                  onChange={e => setData('state', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.state ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('state', e.target.value)}
+                  error={errors.state}
                 />
-                {errors.state && (
-                  <p className="mt-1 text-sm text-red-600">{errors.state}</p>
-                )}
               </div>
-
-              <div>
-                <label htmlFor="postal_code" className="block text-sm font-medium text-gray-700 mb-2">
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  id="postal_code"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Postal Code"
+                  name="postal_code"
                   value={data.postal_code}
-                  onChange={e => setData('postal_code', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.postal_code ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('postal_code', e.target.value)}
+                  error={errors.postal_code}
                 />
-                {errors.postal_code && (
-                  <p className="mt-1 text-sm text-red-600">{errors.postal_code}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
-                  Country
-                </label>
-                <input
-                  type="text"
-                  id="country"
+                <Input
+                  label="Country"
+                  name="country"
                   value={data.country}
-                  onChange={e => setData('country', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.country ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('country', e.target.value)}
+                  error={errors.country}
                 />
-                {errors.country && (
-                  <p className="mt-1 text-sm text-red-600">{errors.country}</p>
-                )}
               </div>
             </div>
-          </div>
+          </Card>
 
-          {/* Guardian Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b pb-3">
-              Guardian Information
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="guardian_name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Guardian Name
-                </label>
-                <input
-                  type="text"
-                  id="guardian_name"
+          <Card>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Guardian Information</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Guardian Name"
+                  name="guardian_name"
                   value={data.guardian_name}
-                  onChange={e => setData('guardian_name', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.guardian_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('guardian_name', e.target.value)}
+                  error={errors.guardian_name}
                 />
-                {errors.guardian_name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.guardian_name}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="guardian_relationship" className="block text-sm font-medium text-gray-700 mb-2">
-                  Relationship
-                </label>
-                <select
-                  id="guardian_relationship"
+                <Select
+                  label="Relationship"
+                  name="guardian_relationship"
                   value={data.guardian_relationship}
-                  onChange={e => setData('guardian_relationship', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.guardian_relationship ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                >
-                  <option value="">Select Relationship</option>
-                  <option value="parent">Parent</option>
-                  <option value="guardian">Guardian</option>
-                  <option value="spouse">Spouse</option>
-                  <option value="sibling">Sibling</option>
-                  <option value="other">Other</option>
-                </select>
-                {errors.guardian_relationship && (
-                  <p className="mt-1 text-sm text-red-600">{errors.guardian_relationship}</p>
-                )}
+                  onChange={(e) => setData('guardian_relationship', e.target.value)}
+                  options={relationshipOptions}
+                  placeholder="Select Relationship"
+                  error={errors.guardian_relationship}
+                />
               </div>
-
-              <div>
-                <label htmlFor="guardian_phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Guardian Phone
-                </label>
-                <input
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
                   type="tel"
-                  id="guardian_phone"
+                  label="Guardian Phone"
+                  name="guardian_phone"
                   value={data.guardian_phone}
-                  onChange={e => setData('guardian_phone', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.guardian_phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('guardian_phone', e.target.value)}
+                  error={errors.guardian_phone}
                 />
-                {errors.guardian_phone && (
-                  <p className="mt-1 text-sm text-red-600">{errors.guardian_phone}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="guardian_email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Guardian Email
-                </label>
-                <input
+                <Input
                   type="email"
-                  id="guardian_email"
+                  label="Guardian Email"
+                  name="guardian_email"
                   value={data.guardian_email}
-                  onChange={e => setData('guardian_email', e.target.value)}
-                  className={`w-full px-4 py-2 border ${errors.guardian_email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  onChange={(e) => setData('guardian_email', e.target.value)}
+                  error={errors.guardian_email}
                 />
-                {errors.guardian_email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.guardian_email}</p>
-                )}
               </div>
             </div>
-          </div>
+          </Card>
 
-          {/* Additional Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b pb-3">
-              Additional Information
-            </h2>
-
-            <div className="grid grid-cols-1 gap-6">
-              <div>
-                <label htmlFor="emergency_contact" className="block text-sm font-medium text-gray-700 mb-2">
-                  Emergency Contact
-                </label>
-                <input
-                  type="text"
-                  id="emergency_contact"
-                  value={data.emergency_contact}
-                  onChange={e => setData('emergency_contact', e.target.value)}
-                  placeholder="Name and phone number"
-                  className={`w-full px-4 py-2 border ${errors.emergency_contact ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-                {errors.emergency_contact && (
-                  <p className="mt-1 text-sm text-red-600">{errors.emergency_contact}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="medical_conditions" className="block text-sm font-medium text-gray-700 mb-2">
-                  Medical Conditions
-                </label>
-                <textarea
-                  id="medical_conditions"
-                  value={data.medical_conditions}
-                  onChange={e => setData('medical_conditions', e.target.value)}
-                  rows={3}
-                  placeholder="Any medical conditions or allergies we should be aware of"
-                  className={`w-full px-4 py-2 border ${errors.medical_conditions ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-                {errors.medical_conditions && (
-                  <p className="mt-1 text-sm text-red-600">{errors.medical_conditions}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-                  Additional Notes
-                </label>
-                <textarea
-                  id="notes"
-                  value={data.notes}
-                  onChange={e => setData('notes', e.target.value)}
-                  rows={3}
-                  placeholder="Any additional information you'd like to share"
-                  className={`w-full px-4 py-2 border ${errors.notes ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-                {errors.notes && (
-                  <p className="mt-1 text-sm text-red-600">{errors.notes}</p>
-                )}
-              </div>
+          <Card>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+            <div className="space-y-4">
+              <Input
+                label="Emergency Contact"
+                name="emergency_contact"
+                value={data.emergency_contact}
+                onChange={(e) => setData('emergency_contact', e.target.value)}
+                placeholder="Name and phone number"
+                error={errors.emergency_contact}
+              />
+              <TextArea
+                label="Medical Conditions"
+                name="medical_conditions"
+                value={data.medical_conditions}
+                onChange={(e) => setData('medical_conditions', e.target.value)}
+                placeholder="Any medical conditions or allergies we should be aware of"
+                error={errors.medical_conditions}
+                rows={2}
+              />
+              <TextArea
+                label="Additional Notes"
+                name="notes"
+                value={data.notes}
+                onChange={(e) => setData('notes', e.target.value)}
+                placeholder="Any additional information you'd like to share"
+                error={errors.notes}
+                rows={2}
+              />
             </div>
-          </div>
+          </Card>
 
-          {/* Form Actions */}
-          <div className="flex items-center justify-end gap-4">
-            <Link
-              href="/student/profile"
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
-            >
+          <div className="flex items-center justify-end gap-3">
+            <Link href="/student/profile" className="btn-secondary">
               Cancel
             </Link>
-            <button
-              type="submit"
-              disabled={processing}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {processing ? 'Saving...' : 'Save Changes'}
-            </button>
+            <Button type="submit" loading={processing}>
+              Save Changes
+            </Button>
           </div>
         </form>
       </div>

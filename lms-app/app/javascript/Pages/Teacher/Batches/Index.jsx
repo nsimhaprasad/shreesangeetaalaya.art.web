@@ -1,139 +1,117 @@
 import { Head, Link } from '@inertiajs/react'
 import Layout from '@components/Layout'
+import { Card, Button, Badge, StatusBadge, Progress, EmptyState, StatCard } from '@components/UI'
+
+const icons = {
+  plus: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  ),
+  users: (
+    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+  ),
+  calendar: (
+    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  ),
+  chevronRight: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  )
+}
 
 export default function BatchesIndex({ batches = [] }) {
-  const getStatusBadgeColor = (status) => {
-    const colors = {
-      active: 'bg-green-100 text-green-800',
-      draft: 'bg-gray-100 text-gray-800',
-      completed: 'bg-blue-100 text-blue-800',
-      cancelled: 'bg-red-100 text-red-800',
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
-  }
-
-  const getClassTypeBadge = (classType) => {
-    const badges = {
-      one_on_one: '1-on-1',
-      group: 'Group',
-    }
-    return badges[classType] || classType
-  }
-
   return (
     <Layout>
       <Head title="My Batches" />
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">My Batches</h1>
-          <Link
-            href="/teacher/batches/new"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-          >
-            + Create Batch
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-display font-bold text-gray-900">My Batches</h1>
+            <p className="text-gray-500 text-sm mt-1">Manage your class batches and groups</p>
+          </div>
+          <Link href="/teacher/batches/new" className="btn-primary">
+            {icons.plus}
+            <span>Create Batch</span>
           </Link>
         </div>
 
         {batches.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <p className="text-gray-500 text-lg mb-4">No batches created yet</p>
-            <Link
-              href="/teacher/batches/new"
-              className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-            >
-              Create Your First Batch
-            </Link>
-          </div>
+          <EmptyState
+            icon={icons.users}
+            title="No batches yet"
+            description="Create your first batch to start organizing students into classes"
+            action={
+              <Link href="/teacher/batches/new" className="btn-primary">
+                Create First Batch
+              </Link>
+            }
+          />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {batches.map((batch) => (
-              <div
-                key={batch.id}
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
-              >
-                <div className="p-6">
+              <Link key={batch.id} href={`/teacher/batches/${batch.id}`}>
+                <Card hover className="h-full">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {batch.name}
-                      </h3>
-                      <p className="text-sm text-gray-600">{batch.course_name}</p>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{batch.name}</h3>
+                      <p className="text-sm text-gray-500">{batch.course_name}</p>
                     </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
-                        batch.status
-                      )}`}
-                    >
-                      {batch.status}
-                    </span>
+                    <StatusBadge status={batch.status} />
                   </div>
 
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span className="font-medium mr-2">Type:</span>
-                      <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">
-                        {getClassTypeBadge(batch.class_type)}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Type</span>
+                      <Badge variant={batch.class_type === 'one_on_one' ? 'primary' : 'info'}>
+                        {batch.class_type === 'one_on_one' ? '1-on-1' : 'Group'}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Students</span>
+                      <span className="font-medium">
+                        {batch.student_count || 0}
+                        {batch.max_students && ` / ${batch.max_students}`}
                       </span>
                     </div>
 
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span className="font-medium mr-2">Students:</span>
-                      <span>
-                        {batch.student_count}
-                        {batch.max_students && ` / ${batch.max_students}`}
-                        {batch.available_seats !== null && batch.available_seats > 0 && (
-                          <span className="text-green-600 ml-1">
-                            ({batch.available_seats} seats available)
-                          </span>
-                        )}
-                        {batch.available_seats === 0 && (
-                          <span className="text-red-600 ml-1">(Full)</span>
-                        )}
-                      </span>
-                    </div>
+                    {batch.max_students && (
+                      <Progress 
+                        value={batch.student_count || 0} 
+                        max={batch.max_students}
+                        size="sm"
+                        color={(batch.student_count || 0) >= batch.max_students ? 'danger' : 'primary'}
+                      />
+                    )}
 
                     {batch.schedule && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <span className="font-medium mr-2">Schedule:</span>
-                        <span>{batch.schedule}</span>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Schedule</span>
+                        <span className="text-gray-700">{batch.schedule}</span>
                       </div>
                     )}
-
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span className="font-medium mr-2">Duration:</span>
-                      <span>
-                        {batch.start_date}
-                        {batch.end_date && ` - ${batch.end_date}`}
-                      </span>
-                    </div>
 
                     {batch.current_fee && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <span className="font-medium mr-2">Fee:</span>
-                        <span className="text-green-700 font-semibold">
-                          ₹{batch.current_fee}
-                        </span>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Fee</span>
+                        <span className="font-semibold text-green-600">₹{batch.current_fee}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex space-x-2">
-                    <Link
-                      href={`/teacher/batches/${batch.id}`}
-                      className="flex-1 text-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium rounded-md transition-colors"
-                    >
-                      View Details
-                    </Link>
-                    <Link
-                      href={`/teacher/batches/${batch.id}/edit`}
-                      className="flex-1 text-center px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-md transition-colors"
-                    >
-                      Edit
-                    </Link>
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-sm text-primary-600">
+                    <span>View details</span>
+                    {icons.chevronRight}
                   </div>
-                </div>
-              </div>
+                </Card>
+              </Link>
             ))}
           </div>
         )}

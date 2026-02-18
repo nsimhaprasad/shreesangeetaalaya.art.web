@@ -1,11 +1,48 @@
 import { Head, Link, router } from '@inertiajs/react'
 import { useState } from 'react'
-import Layout from '../../../Components/Layout'
-import Card from '../../../Components/Card'
-import Badge from '../../../Components/Badge'
-import Button from '../../../Components/Button'
-import TextInput from '../../../Components/TextInput'
-import SelectInput from '../../../Components/SelectInput'
+import Layout from '@components/Layout'
+import { 
+  Card, Button, Badge, Avatar, EmptyState, 
+  SearchInput, Select, Progress 
+} from '@components/UI'
+
+const icons = {
+  plus: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  ),
+  pdf: (
+    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+    </svg>
+  ),
+  video: (
+    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+    </svg>
+  ),
+  audio: (
+    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+    </svg>
+  ),
+  document: (
+    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  ),
+  youtube: (
+    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+    </svg>
+  ),
+  chevronRight: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  )
+}
 
 export default function Index({ resources, filters, pagination, available_tags, resource_types, visibilities }) {
   const [searchTerm, setSearchTerm] = useState(filters.search || '')
@@ -21,10 +58,7 @@ export default function Index({ resources, filters, pagination, available_tags, 
       visibility: visibility,
       tag: tag,
       sort: sort
-    }, {
-      preserveState: true,
-      preserveScroll: true
-    })
+    }, { preserveState: true, preserveScroll: true })
   }
 
   const handleReset = () => {
@@ -33,40 +67,40 @@ export default function Index({ resources, filters, pagination, available_tags, 
     setVisibility('')
     setTag('')
     setSort('recent')
-    router.get('/teacher/learning_resources', {}, {
-      preserveState: true,
-      preserveScroll: true
-    })
+    router.get('/teacher/learning_resources', {}, { preserveState: true, preserveScroll: true })
   }
 
   const handlePageChange = (page) => {
     router.get('/teacher/learning_resources', {
-      page: page,
+      page,
       search: searchTerm,
       resource_type: resourceType,
       visibility: visibility,
       tag: tag,
       sort: sort
-    }, {
-      preserveState: true,
-      preserveScroll: true
-    })
+    }, { preserveState: true, preserveScroll: true })
   }
 
-  const resourceTypeOptions = resource_types.map(type => ({
-    value: type,
-    label: type.charAt(0).toUpperCase() + type.slice(1)
-  }))
+  const resourceTypeOptions = [
+    { value: '', label: 'All Types' },
+    ...resource_types.map(type => ({
+      value: type,
+      label: type.charAt(0).toUpperCase() + type.slice(1)
+    }))
+  ]
 
-  const visibilityOptions = visibilities.map(vis => ({
-    value: vis,
-    label: vis.charAt(0).toUpperCase() + vis.slice(1).replace('_resource', '')
-  }))
+  const visibilityOptions = [
+    { value: '', label: 'All Visibility' },
+    ...visibilities.map(vis => ({
+      value: vis,
+      label: vis.charAt(0).toUpperCase() + vis.slice(1).replace('_resource', '')
+    }))
+  ]
 
-  const tagOptions = available_tags.map(tag => ({
-    value: tag,
-    label: tag
-  }))
+  const tagOptions = [
+    { value: '', label: 'All Tags' },
+    ...available_tags.map(t => ({ value: t, label: t }))
+  ]
 
   const sortOptions = [
     { value: 'recent', label: 'Most Recent' },
@@ -75,39 +109,16 @@ export default function Index({ resources, filters, pagination, available_tags, 
     { value: 'type', label: 'Type' }
   ]
 
-  const getResourceIcon = (type) => {
+  const getResourceIcon = (type, isYoutube) => {
+    if (isYoutube) {
+      return <div className="text-red-500">{icons.youtube}</div>
+    }
     switch(type) {
-      case 'pdf':
-        return (
-          <svg className="h-8 w-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
-          </svg>
-        )
-      case 'video':
-      case 'youtube':
-        return (
-          <svg className="h-8 w-8 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-          </svg>
-        )
-      case 'audio':
-        return (
-          <svg className="h-8 w-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" />
-          </svg>
-        )
-      case 'document':
-        return (
-          <svg className="h-8 w-8 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" />
-          </svg>
-        )
-      default:
-        return (
-          <svg className="h-8 w-8 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
-          </svg>
-        )
+      case 'pdf': return <div className="text-red-500">{icons.pdf}</div>
+      case 'video': return <div className="text-purple-500">{icons.video}</div>
+      case 'audio': return <div className="text-blue-500">{icons.audio}</div>
+      case 'document': return <div className="text-green-500">{icons.document}</div>
+      default: return <div className="text-gray-500">{icons.document}</div>
     }
   }
 
@@ -122,266 +133,172 @@ export default function Index({ resources, filters, pagination, available_tags, 
     <Layout>
       <Head title="Learning Resources" />
 
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Learning Resources</h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Manage and share educational content with your students
-            </p>
+            <h1 className="text-2xl font-display font-bold text-gray-900">Learning Resources</h1>
+            <p className="text-gray-500 text-sm mt-1">Manage and share educational content with your students</p>
           </div>
-          <Link href="/teacher/learning_resources/new">
-            <Button variant="primary">
-              Upload New Resource
-            </Button>
+          <Link href="/teacher/learning_resources/new" className="btn-primary">
+            {icons.plus}
+            <span>Upload Resource</span>
           </Link>
         </div>
 
-        {/* Search and Filters */}
-        <Card className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="lg:col-span-2">
-              <TextInput
-                label="Search"
-                name="search"
+        <Card>
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1">
+              <SearchInput
+                placeholder="Search by title or description..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by title or description..."
+                onClear={searchTerm ? () => setSearchTerm('') : undefined}
               />
             </div>
-
-            <SelectInput
-              label="Type"
-              name="resource_type"
-              value={resourceType}
-              onChange={(e) => setResourceType(e.target.value)}
-              options={resourceTypeOptions}
-              placeholder="All Types"
-            />
-
-            <SelectInput
-              label="Visibility"
-              name="visibility"
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value)}
-              options={visibilityOptions}
-              placeholder="All"
-            />
-
-            <SelectInput
-              label="Sort By"
-              name="sort"
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              options={sortOptions}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <SelectInput
-              label="Tag"
-              name="tag"
-              value={tag}
-              onChange={(e) => setTag(e.target.value)}
-              options={tagOptions}
-              placeholder="All Tags"
-            />
-
-            <div className="flex items-end space-x-2">
-              <Button
-                variant="primary"
-                onClick={handleSearch}
-                className="flex-1"
-              >
-                Search
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleReset}
-              >
-                Reset
-              </Button>
+            <div className="flex flex-wrap gap-2">
+              <Select
+                value={resourceType}
+                onChange={(e) => setResourceType(e.target.value)}
+                options={resourceTypeOptions}
+                className="w-36"
+              />
+              <Select
+                value={visibility}
+                onChange={(e) => setVisibility(e.target.value)}
+                options={visibilityOptions}
+                className="w-36"
+              />
+              <Select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                options={sortOptions}
+                className="w-36"
+              />
             </div>
+          </div>
+          <div className="flex gap-2 mt-4">
+            <Button onClick={handleSearch}>Search</Button>
+            <Button variant="ghost" onClick={handleReset}>Reset</Button>
           </div>
         </Card>
 
-        {/* Results Info */}
-        <div className="mb-4 text-sm text-gray-600">
-          Showing {resources.length} of {pagination.total_count} resources
-        </div>
+        {pagination && (
+          <p className="text-sm text-gray-500">
+            Showing {resources?.length || 0} of {pagination.total_count || 0} resources
+          </p>
+        )}
 
-        {/* Resources Grid */}
-        {resources.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {resources && resources.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {resources.map((resource) => (
-              <Card key={resource.id} padding={false} className="hover:shadow-lg transition-shadow duration-200">
-                <Link href={`/teacher/learning_resources/${resource.id}`} className="block">
-                  <div className="p-6">
-                    {/* Resource Icon & Type */}
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0">
-                        {getResourceIcon(resource.resource_type)}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">
+              <Link
+                key={resource.id}
+                href={`/teacher/learning_resources/${resource.id}`}
+                className="block"
+              >
+                <Card hover className="h-full">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      {getResourceIcon(resource.resource_type, resource.is_youtube)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-semibold text-gray-900 truncate">
                           {resource.title}
                         </h3>
-                        <p className="text-sm text-gray-500 line-clamp-2 mt-1">
-                          {resource.description || 'No description'}
-                        </p>
+                        <Badge variant={resource.visibility === 'public' ? 'success' : 'default'}>
+                          {resource.visibility === 'private_resource' ? 'Private' : 'Public'}
+                        </Badge>
                       </div>
-
-                      <Badge variant={resource.visibility === 'public' ? 'active' : 'inactive'}>
-                        {resource.visibility === 'private_resource' ? 'Private' : 'Public'}
-                      </Badge>
+                      <p className="text-sm text-gray-500 line-clamp-2 mt-1">
+                        {resource.description || 'No description'}
+                      </p>
                     </div>
+                  </div>
 
-                    {/* Resource Details */}
-                    <div className="mt-4 space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Type:</span>
-                        <span className="font-medium text-gray-900 capitalize">
-                          {resource.is_youtube ? 'YouTube' : resource.resource_type}
-                        </span>
-                      </div>
-
-                      {resource.has_file && (
-                        <>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">File:</span>
-                            <span className="font-medium text-gray-900 truncate ml-2">
-                              {resource.file_name}
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Size:</span>
-                            <span className="font-medium text-gray-900">
-                              {formatFileSize(resource.file_size)}
-                            </span>
-                          </div>
-                        </>
-                      )}
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Assignments:</span>
-                        <span className="font-medium text-gray-900">
-                          {resource.assignments_count || 0}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Students:</span>
-                        <span className="font-medium text-gray-900">
-                          {resource.students_count || 0}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Batches:</span>
-                        <span className="font-medium text-gray-900">
-                          {resource.batches_count || 0}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Created:</span>
-                        <span className="font-medium text-gray-900">
-                          {new Date(resource.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
+                  <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-gray-500">Type</p>
+                      <p className="font-medium text-gray-900 capitalize">
+                        {resource.is_youtube ? 'YouTube' : resource.resource_type}
+                      </p>
                     </div>
-
-                    {/* Tags */}
-                    {resource.tags && resource.tags.length > 0 && (
-                      <div className="mt-4 flex flex-wrap gap-1">
-                        {resource.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                    {resource.has_file && (
+                      <div>
+                        <p className="text-gray-500">Size</p>
+                        <p className="font-medium text-gray-900">{formatFileSize(resource.file_size)}</p>
                       </div>
                     )}
+                    <div>
+                      <p className="text-gray-500">Assigned</p>
+                      <p className="font-medium text-gray-900">{resource.assignments_count || 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">Students</p>
+                      <p className="font-medium text-gray-900">{resource.students_count || 0}</p>
+                    </div>
                   </div>
-                </Link>
-              </Card>
+
+                  {resource.tags && resource.tags.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {resource.tags.slice(0, 3).map((t, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-50 text-primary-700"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {resource.tags.length > 3 && (
+                        <span className="text-xs text-gray-500">+{resource.tags.length - 3}</span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex items-center text-sm text-primary-600">
+                    <span>View details</span>
+                    {icons.chevronRight}
+                  </div>
+                </Card>
+              </Link>
             ))}
           </div>
         ) : (
-          <Card>
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No resources found</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {filters.search || filters.resource_type ? 'Try adjusting your filters' : 'Get started by uploading a new resource'}
-              </p>
-              {!filters.search && !filters.resource_type && (
-                <div className="mt-6">
-                  <Link href="/teacher/learning_resources/new">
-                    <Button variant="primary">
-                      Upload New Resource
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </Card>
+          <EmptyState
+            icon={icons.document}
+            title="No resources found"
+            description={searchTerm || resourceType ? "Try adjusting your search filters" : "Upload your first resource to get started"}
+            action={
+              !searchTerm && !resourceType && (
+                <Link href="/teacher/learning_resources/new" className="btn-primary">
+                  Upload Resource
+                </Link>
+              )
+            }
+          />
         )}
 
-        {/* Pagination */}
-        {pagination.total_pages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+        {pagination && pagination.total_pages > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handlePageChange(pagination.current_page - 1)}
+              disabled={pagination.current_page === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-600 px-4">
               Page {pagination.current_page} of {pagination.total_pages}
-            </div>
-
-            <div className="flex space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => handlePageChange(pagination.current_page - 1)}
-                disabled={pagination.current_page === 1}
-              >
-                Previous
-              </Button>
-
-              {[...Array(pagination.total_pages)].map((_, index) => {
-                const page = index + 1
-                if (
-                  page === 1 ||
-                  page === pagination.total_pages ||
-                  (page >= pagination.current_page - 2 && page <= pagination.current_page + 2)
-                ) {
-                  return (
-                    <Button
-                      key={page}
-                      variant={page === pagination.current_page ? 'primary' : 'secondary'}
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </Button>
-                  )
-                } else if (
-                  page === pagination.current_page - 3 ||
-                  page === pagination.current_page + 3
-                ) {
-                  return <span key={page} className="px-2 py-2">...</span>
-                }
-                return null
-              })}
-
-              <Button
-                variant="secondary"
-                onClick={() => handlePageChange(pagination.current_page + 1)}
-                disabled={pagination.current_page === pagination.total_pages}
-              >
-                Next
-              </Button>
-            </div>
+            </span>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handlePageChange(pagination.current_page + 1)}
+              disabled={pagination.current_page === pagination.total_pages}
+            >
+              Next
+            </Button>
           </div>
         )}
       </div>

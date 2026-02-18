@@ -1,303 +1,222 @@
 import { Head, Link, router } from '@inertiajs/react'
 import { useState } from 'react'
-import Layout from '../../../Components/Layout'
-import Card from '../../../Components/Card'
-import Badge from '../../../Components/Badge'
-import Button from '../../../Components/Button'
-import TextInput from '../../../Components/TextInput'
-import SelectInput from '../../../Components/SelectInput'
-import DateInput from '../../../Components/DateInput'
+import Layout from '@components/Layout'
+import { 
+  Card, Button, Badge, Avatar, Progress, EmptyState,
+  Input, Select, SearchInput, ConfirmModal 
+} from '@components/UI'
 
-export default function Index({ students, filters, pagination }) {
-  const [searchTerm, setSearchTerm] = useState(filters.search || '')
-  const [status, setStatus] = useState(filters.status || '')
-  const [enrollmentFrom, setEnrollmentFrom] = useState(filters.enrollment_from || '')
-  const [enrollmentTo, setEnrollmentTo] = useState(filters.enrollment_to || '')
+const icons = {
+  plus: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  ),
+  filter: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+    </svg>
+  ),
+  chevronRight: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  )
+}
+
+export default function StudentIndex({ students, filters, pagination }) {
+  const [searchTerm, setSearchTerm] = useState(filters?.search || '')
+  const [status, setStatus] = useState(filters?.status || '')
+  const [showFilters, setShowFilters] = useState(false)
+  const [deleteModal, setDeleteModal] = useState({ open: false, student: null })
 
   const handleSearch = () => {
     router.get('/teacher/students', {
       search: searchTerm,
       status: status,
-      enrollment_from: enrollmentFrom,
-      enrollment_to: enrollmentTo
-    }, {
-      preserveState: true,
-      preserveScroll: true
-    })
+    }, { preserveState: true, preserveScroll: true })
   }
 
   const handleReset = () => {
     setSearchTerm('')
     setStatus('')
-    setEnrollmentFrom('')
-    setEnrollmentTo('')
-    router.get('/teacher/students', {}, {
-      preserveState: true,
-      preserveScroll: true
-    })
+    router.get('/teacher/students', {}, { preserveState: true })
   }
 
   const handlePageChange = (page) => {
     router.get('/teacher/students', {
-      page: page,
+      page,
       search: searchTerm,
       status: status,
-      enrollment_from: enrollmentFrom,
-      enrollment_to: enrollmentTo
-    }, {
-      preserveState: true,
-      preserveScroll: true
-    })
+    }, { preserveState: true, preserveScroll: true })
+  }
+
+  const handleDelete = () => {
+    if (deleteModal.student) {
+      router.delete(`/teacher/students/${deleteModal.student.id}`)
+      setDeleteModal({ open: false, student: null })
+    }
   }
 
   const statusOptions = [
+    { value: '', label: 'All Statuses' },
     { value: 'active', label: 'Active' },
     { value: 'inactive', label: 'Inactive' },
-    { value: 'suspended', label: 'Suspended' }
   ]
 
   return (
     <Layout>
       <Head title="Students" />
 
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Students</h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Manage your students and track their progress
-            </p>
+            <h1 className="text-2xl font-display font-bold text-gray-900">Students</h1>
+            <p className="text-gray-500 text-sm mt-1">Manage and track your students</p>
           </div>
-          <Link href="/teacher/students/new">
-            <Button variant="primary">
-              Add New Student
-            </Button>
+          <Link href="/teacher/students/new" className="btn-primary">
+            {icons.plus}
+            <span>Add Student</span>
           </Link>
         </div>
 
-        {/* Search and Filters */}
-        <Card className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="lg:col-span-2">
-              <TextInput
-                label="Search"
-                name="search"
+        <Card>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <SearchInput
+                placeholder="Search by name, email, or phone..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name, email, or phone..."
+                onClear={searchTerm ? () => setSearchTerm('') : undefined}
               />
             </div>
-
-            <SelectInput
-              label="Status"
-              name="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              options={statusOptions}
-              placeholder="All Statuses"
-            />
-
-            <div className="flex items-end space-x-2">
-              <Button
-                variant="primary"
-                onClick={handleSearch}
-                className="flex-1"
-              >
-                Search
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleReset}
-              >
-                Reset
-              </Button>
+            <div className="flex gap-2">
+              <Select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                options={statusOptions}
+                className="w-40"
+              />
+              <Button onClick={handleSearch}>Search</Button>
+              <Button variant="ghost" onClick={handleReset}>Reset</Button>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <DateInput
-              label="Enrollment From"
-              name="enrollment_from"
-              value={enrollmentFrom}
-              onChange={(e) => setEnrollmentFrom(e.target.value)}
-            />
-
-            <DateInput
-              label="Enrollment To"
-              name="enrollment_to"
-              value={enrollmentTo}
-              onChange={(e) => setEnrollmentTo(e.target.value)}
-            />
           </div>
         </Card>
 
-        {/* Results Info */}
-        <div className="mb-4 text-sm text-gray-600">
-          Showing {students.length} of {pagination.total_count} students
-        </div>
+        {pagination && (
+          <p className="text-sm text-gray-500">
+            Showing {students?.length || 0} of {pagination.total_count || 0} students
+          </p>
+        )}
 
-        {/* Students Grid */}
-        {students.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {students && students.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {students.map((student) => (
-              <Card key={student.id} padding={false} className="hover:shadow-lg transition-shadow duration-200">
-                <Link href={`/teacher/students/${student.id}`} className="block">
-                  <div className="p-6">
-                    {/* Avatar Placeholder */}
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0">
-                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xl font-bold">
-                          {student.first_name?.charAt(0) || 'S'}{student.last_name?.charAt(0) || ''}
-                        </div>
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">
-                          {student.full_name}
+              <Link
+                key={student.id}
+                href={`/teacher/students/${student.id}`}
+                className="block"
+              >
+                <Card hover className="h-full">
+                  <div className="flex items-start gap-4">
+                    <Avatar 
+                      name={`${student.first_name} ${student.last_name}`} 
+                      src={student.avatar_url}
+                      size="lg"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {student.full_name || `${student.first_name} ${student.last_name}`}
                         </h3>
-                        <p className="text-sm text-gray-500 truncate">{student.email}</p>
-                        {student.phone && (
-                          <p className="text-sm text-gray-500">{student.phone}</p>
-                        )}
+                        <StatusBadge status={student.status} />
                       </div>
-
-                      <Badge variant={student.status}>
-                        {student.status}
-                      </Badge>
-                    </div>
-
-                    {/* Student Details */}
-                    <div className="mt-4 space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Enrollment Date:</span>
-                        <span className="font-medium text-gray-900">
-                          {student.enrollment_date ? new Date(student.enrollment_date).toLocaleDateString() : 'N/A'}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Batches:</span>
-                        <span className="font-medium text-gray-900">
-                          {student.batch_count || 0}
-                        </span>
-                      </div>
-
-                      {student.guardian_name && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Guardian:</span>
-                          <span className="font-medium text-gray-900 truncate ml-2">
-                            {student.guardian_name}
-                          </span>
-                        </div>
-                      )}
-
-                      {student.attendance_percentage !== null && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Attendance:</span>
-                          <span className="font-medium text-gray-900">
-                            {student.attendance_percentage}%
-                          </span>
-                        </div>
-                      )}
-
-                      {student.payment_status && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Payment Status:</span>
-                          <Badge variant={student.payment_status}>
-                            {student.payment_status}
-                          </Badge>
-                        </div>
+                      <p className="text-sm text-gray-500 truncate">{student.email}</p>
+                      {student.phone && (
+                        <p className="text-xs text-gray-400">{student.phone}</p>
                       )}
                     </div>
                   </div>
 
-                  {student.batches && (
-                    <div className="border-t border-gray-200 px-6 py-3 bg-gray-50">
-                      <p className="text-xs text-gray-600 truncate">
-                        <span className="font-medium">Classes:</span> {student.batches || 'No batches'}
-                      </p>
+                  <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-500">Batches</p>
+                      <p className="font-medium text-gray-900">{student.batch_count || 0}</p>
                     </div>
-                  )}
-                </Link>
-              </Card>
+                    <div>
+                      <p className="text-gray-500">Attendance</p>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900">
+                          {student.attendance_percentage || 0}%
+                        </span>
+                        {(student.attendance_percentage || 0) < 75 && (
+                          <span className="w-2 h-2 bg-amber-500 rounded-full" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-center text-sm text-primary-600">
+                    <span>View details</span>
+                    {icons.chevronRight}
+                  </div>
+                </Card>
+              </Link>
             ))}
           </div>
         ) : (
-          <Card>
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          <EmptyState
+            icon={
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No students found</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {filters.search || filters.status ? 'Try adjusting your filters' : 'Get started by adding a new student'}
-              </p>
-              {!filters.search && !filters.status && (
-                <div className="mt-6">
-                  <Link href="/teacher/students/new">
-                    <Button variant="primary">
-                      Add New Student
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </Card>
+            }
+            title="No students found"
+            description={searchTerm || status ? "Try adjusting your search filters" : "Add your first student to get started"}
+            action={
+              !searchTerm && !status && (
+                <Link href="/teacher/students/new" className="btn-primary">
+                  Add Student
+                </Link>
+              )
+            }
+          />
         )}
 
-        {/* Pagination */}
-        {pagination.total_pages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+        {pagination && pagination.total_pages > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handlePageChange(pagination.current_page - 1)}
+              disabled={pagination.current_page === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-600 px-4">
               Page {pagination.current_page} of {pagination.total_pages}
-            </div>
-
-            <div className="flex space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => handlePageChange(pagination.current_page - 1)}
-                disabled={pagination.current_page === 1}
-              >
-                Previous
-              </Button>
-
-              {[...Array(pagination.total_pages)].map((_, index) => {
-                const page = index + 1
-                // Show first page, last page, current page, and pages around current page
-                if (
-                  page === 1 ||
-                  page === pagination.total_pages ||
-                  (page >= pagination.current_page - 2 && page <= pagination.current_page + 2)
-                ) {
-                  return (
-                    <Button
-                      key={page}
-                      variant={page === pagination.current_page ? 'primary' : 'secondary'}
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </Button>
-                  )
-                } else if (
-                  page === pagination.current_page - 3 ||
-                  page === pagination.current_page + 3
-                ) {
-                  return <span key={page} className="px-2 py-2">...</span>
-                }
-                return null
-              })}
-
-              <Button
-                variant="secondary"
-                onClick={() => handlePageChange(pagination.current_page + 1)}
-                disabled={pagination.current_page === pagination.total_pages}
-              >
-                Next
-              </Button>
-            </div>
+            </span>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handlePageChange(pagination.current_page + 1)}
+              disabled={pagination.current_page === pagination.total_pages}
+            >
+              Next
+            </Button>
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={deleteModal.open}
+        onClose={() => setDeleteModal({ open: false, student: null })}
+        onConfirm={handleDelete}
+        title="Delete Student"
+        message={`Are you sure you want to delete ${deleteModal.student?.full_name}? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="danger"
+      />
     </Layout>
   )
 }
