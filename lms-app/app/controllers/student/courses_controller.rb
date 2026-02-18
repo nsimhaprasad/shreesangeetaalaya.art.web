@@ -1,5 +1,4 @@
-module Student
-  class CoursesController < ApplicationController
+class Student::CoursesController < ApplicationController
     before_action :authenticate_user!
     before_action :ensure_student
     before_action :set_student
@@ -171,5 +170,4 @@ module Student
     def set_course
       @course = Course.find(params[:id])
     end
-  end
 end

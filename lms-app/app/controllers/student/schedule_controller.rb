@@ -1,5 +1,4 @@
-module Student
-  class ScheduleController < ApplicationController
+class Student::ScheduleController < ApplicationController
     before_action :authenticate_user!
     before_action :ensure_student
     before_action :set_student
@@ -61,5 +60,4 @@ module Student
     def set_student
       @student = current_user.student
     end
-  end
 end

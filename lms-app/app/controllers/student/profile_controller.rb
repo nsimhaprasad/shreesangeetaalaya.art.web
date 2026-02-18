@@ -1,5 +1,4 @@
-module Student
-  class ProfileController < ApplicationController
+class Student::ProfileController < ApplicationController
     before_action :authenticate_user!
     before_action :ensure_student
     before_action :set_student
@@ -155,5 +154,4 @@ module Student
         :emergency_contact, :medical_conditions, :notes
       )
     end
-  end
 end
