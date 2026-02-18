@@ -6,14 +6,14 @@ export default function FileInput({
   required = false,
   accept = '',
   disabled = false,
-  helpText = ''
+  helpText = '',
 }) {
   return (
     <div>
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={name} className="label">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="ml-1 text-red-500">*</span>}
         </label>
       )}
       <input
@@ -24,18 +24,10 @@ export default function FileInput({
         required={required}
         accept={accept}
         disabled={disabled}
-        className={`appearance-none block w-full px-3 py-2 border ${
-          error ? 'border-red-300' : 'border-gray-300'
-        } rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-          disabled ? 'bg-gray-100 cursor-not-allowed' : ''
-        }`}
+        className={`input file:mr-4 file:rounded-lg file:border-0 file:bg-primary-600 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-700 ${error ? 'input-error' : ''} ${disabled ? 'cursor-not-allowed opacity-70' : ''}`}
       />
-      {helpText && (
-        <p className="mt-1 text-sm text-gray-500">{helpText}</p>
-      )}
-      {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
-      )}
+      {helpText && <p className="mt-1 text-sm" style={{ color: 'var(--app-text-muted)' }}>{helpText}</p>}
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   )
 }

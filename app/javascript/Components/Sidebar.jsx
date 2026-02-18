@@ -215,10 +215,10 @@ export default function Sidebar({ user, isOpen, setIsOpen }) {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
   }, [isOpen])
 
@@ -226,25 +226,27 @@ export default function Sidebar({ user, isOpen, setIsOpen }) {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 z-30 lg:hidden"
+          style={{ background: 'var(--app-overlay)' }}
           onClick={() => setIsOpen(false)}
         />
       )}
 
       <aside
         className={`
-          fixed top-16 left-0 z-30 h-[calc(100vh-4rem)] bg-white border-r border-gray-100 transition-all duration-300 ease-in-out
+          app-sidebar fixed left-0 z-30 h-[calc(100vh-4.2rem)] border-r transition-all duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 ${collapsed ? 'lg:w-20' : 'lg:w-64'}
           w-64
         `}
+        style={{ top: '4.2rem' }}
       >
         <div className="h-full flex flex-col">
           <div className="flex-1 overflow-y-auto py-4 scrollbar-hide">
             {navSections.map((section, idx) => (
               <div key={idx} className="mb-4">
                 {!collapsed && section.section && (
-                  <h3 className="px-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--app-text-soft)' }}>
                     {section.section}
                   </h3>
                 )}
@@ -270,20 +272,22 @@ export default function Sidebar({ user, isOpen, setIsOpen }) {
             ))}
           </div>
 
-          <div className="hidden lg:block p-4 border-t border-gray-100">
+          <div className="hidden border-t p-4 lg:block" style={{ borderColor: 'var(--app-border)' }}>
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="w-full flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="w-full flex items-center justify-center p-2 rounded-lg transition-colors hover:bg-gray-100"
+              style={{ color: 'var(--app-text-muted)' }}
             >
               {collapsed ? icons.chevronRight : icons.chevronLeft}
             </button>
           </div>
 
           {!collapsed && (
-            <div className="p-4 border-t border-gray-100">
+            <div className="border-t p-4" style={{ borderColor: 'var(--app-border)' }}>
               <Link 
                 href="/"
-                className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary-600 transition-colors"
+                className="flex items-center gap-2 text-sm transition-colors hover:text-primary-600"
+                style={{ color: 'var(--app-text-muted)' }}
               >
                 {icons.home}
                 <span>Back to Website</span>

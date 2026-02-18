@@ -1,11 +1,7 @@
 import { forwardRef } from 'react'
 
 export const Card = ({ children, className = '', hover = false, glass = false, padding = true, ...props }) => {
-  const baseClasses = glass 
-    ? 'card-glass' 
-    : hover 
-      ? 'card-elevated' 
-      : 'card'
+  const baseClasses = glass ? 'card-glass' : hover ? 'card-elevated' : 'card'
 
   return (
     <div className={`${baseClasses} ${padding ? 'p-6' : ''} ${className}`} {...props}>
@@ -15,51 +11,57 @@ export const Card = ({ children, className = '', hover = false, glass = false, p
 }
 
 export const CardHeader = ({ children, className = '', action }) => (
-  <div className={`flex items-center justify-between mb-4 ${className}`}>
+  <div className={`mb-4 flex items-center justify-between ${className}`}>
     <div>{children}</div>
     {action && <div>{action}</div>}
   </div>
 )
 
 export const CardTitle = ({ children, className = '' }) => (
-  <h3 className={`text-lg font-semibold text-gray-900 ${className}`}>{children}</h3>
+  <h3 className={`text-lg font-semibold ${className}`} style={{ color: 'var(--app-text)' }}>
+    {children}
+  </h3>
 )
 
 export const CardDescription = ({ children, className = '' }) => (
-  <p className={`text-sm text-gray-500 mt-1 ${className}`}>{children}</p>
+  <p className={`mt-1 text-sm ${className}`} style={{ color: 'var(--app-text-muted)' }}>
+    {children}
+  </p>
 )
 
-export const CardContent = ({ children, className = '' }) => (
-  <div className={className}>{children}</div>
-)
+export const CardContent = ({ children, className = '' }) => <div className={className}>{children}</div>
 
 export const CardFooter = ({ children, className = '' }) => (
-  <div className={`mt-4 pt-4 border-t border-gray-100 ${className}`}>{children}</div>
+  <div className={`mt-4 border-t pt-4 ${className}`} style={{ borderColor: 'var(--app-border)' }}>
+    {children}
+  </div>
 )
 
 export const StatCard = ({ title, value, change, changeType, icon, className = '' }) => {
   const changeColors = {
-    positive: 'text-green-600 bg-green-50',
-    negative: 'text-red-600 bg-red-50',
-    neutral: 'text-gray-600 bg-gray-50'
+    positive: 'text-emerald-700 bg-emerald-100',
+    negative: 'text-rose-700 bg-rose-100',
+    neutral: 'text-gray-700 bg-gray-100',
   }
 
   return (
-    <Card hover className={className}>
-      <div className="flex items-start justify-between">
+    <Card className={`stat-card ${className}`} hover>
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--app-text-muted)' }}>
+            {title}
+          </p>
           <p className="stat-value mt-2">{value}</p>
           {change && (
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-2 ${changeColors[changeType || 'neutral']}`}>
-              {changeType === 'positive' && '↑'}
-              {changeType === 'negative' && '↓'}
+            <span className={`mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${changeColors[changeType || 'neutral']}`}>
+              {changeType === 'positive' && 'up'}
+              {changeType === 'negative' && 'down'}
               {change}
             </span>
           )}
         </div>
         {icon && (
-          <div className="p-3 bg-primary-50 rounded-xl text-primary-600">
+          <div className="rounded-xl p-3 text-primary-700" style={{ background: 'var(--app-brand-soft)' }}>
             {icon}
           </div>
         )}
