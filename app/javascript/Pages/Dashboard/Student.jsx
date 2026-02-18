@@ -81,12 +81,12 @@ export default function StudentDashboard({
       <Head title="Dashboard" />
 
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="app-section flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-display font-bold text-gray-900">My Dashboard</h1>
-            <p className="text-gray-500 text-sm mt-1">Track your musical journey progress</p>
+            <h1 className="text-3xl font-display font-bold">Student Dashboard</h1>
+            <p className="mt-1 text-sm" style={{ color: 'var(--app-text-muted)' }}>Track progress, classes, resources, and payments.</p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--app-text-muted)' }}>
             {icons.clock}
             <span>{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </div>
@@ -257,8 +257,9 @@ export default function StudentDashboard({
                   <Link
                     key={idx}
                     href={link.href}
-                    className="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-center"
-                  >
+                  className="flex flex-col items-center justify-center rounded-xl border p-4 text-center transition-colors hover:bg-gray-100"
+                  style={{ borderColor: 'var(--app-border)' }}
+                >
                     <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${link.color} text-white flex items-center justify-center mb-2`}>
                       {link.icon}
                     </div>

@@ -42,12 +42,17 @@ export default function Modal({
         onClick={e => e.stopPropagation()}
       >
         {(title || showClose) && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-100">
-            {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
+          <div className="flex items-center justify-between border-b p-4" style={{ borderColor: 'var(--app-border)' }}>
+            {title && (
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--app-text)' }}>
+                {title}
+              </h3>
+            )}
             {showClose && (
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="rounded-lg p-2 transition-colors hover:bg-gray-100"
+                style={{ color: 'var(--app-text-muted)' }}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -74,7 +79,7 @@ export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confi
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-      <p className="text-gray-600 mb-6">{message}</p>
+      <p className="mb-6" style={{ color: 'var(--app-text-muted)' }}>{message}</p>
       <div className="flex gap-3 justify-end">
         <button onClick={onClose} className="btn-secondary">
           {cancelText}

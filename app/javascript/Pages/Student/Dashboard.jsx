@@ -83,11 +83,11 @@ export default function StudentDashboard({
       <Head title="Student Dashboard" />
 
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white">
-          <h1 className="text-3xl font-bold mb-2">
+        <div className="app-section" style={{ background: 'linear-gradient(145deg, color-mix(in srgb, var(--app-brand) 22%, var(--app-surface)), var(--app-surface))' }}>
+          <h1 className="mb-2 text-3xl font-bold">
             Welcome back, {student.name || 'Student'}!
           </h1>
-          <p className="text-blue-100">
+          <p style={{ color: 'var(--app-text-muted)' }}>
             Here's what's happening with your courses today
           </p>
         </div>

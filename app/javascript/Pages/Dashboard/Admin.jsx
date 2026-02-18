@@ -107,12 +107,12 @@ export default function AdminDashboard({
       <Head title="Admin Dashboard" />
 
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="app-section flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-display font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-500 text-sm mt-1">Overview of your music institution</p>
+            <h1 className="text-3xl font-display font-bold">Admin Dashboard</h1>
+            <p className="mt-1 text-sm" style={{ color: 'var(--app-text-muted)' }}>Overview of your music institution</p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--app-text-muted)' }}>
             {icons.clock}
             <span>{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </div>
@@ -230,7 +230,8 @@ export default function AdminDashboard({
                   <Link
                     key={idx}
                     href={action.href}
-                    className="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-center"
+                    className="flex flex-col items-center justify-center rounded-xl border p-4 text-center transition-colors hover:bg-gray-100"
+                    style={{ borderColor: 'var(--app-border)' }}
                   >
                     <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} text-white flex items-center justify-center mb-2`}>
                       {action.icon}

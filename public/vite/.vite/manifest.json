@@ -6,12 +6,12 @@
     "isEntry": true
   },
   "entrypoints/application.jsx": {
-    "file": "assets/application-D0uxJwHY.js",
+    "file": "assets/application-BLUlH39J.js",
     "name": "entrypoints/application.jsx",
     "src": "entrypoints/application.jsx",
     "isEntry": true,
     "css": [
-      "assets/application-WWT-FBhq.css"
+      "assets/application-DPIRS-OY.css"
     ]
   }
 }
