@@ -1,5 +1,25 @@
 import { Head, Link } from '@inertiajs/react'
 import Layout from '@components/Layout'
+import Card from '@components/Card'
+import Badge from '@components/Badge'
+import Button from '@components/Button'
+
+const STATUS_VARIANTS = {
+  active: 'success',
+  completed: 'primary',
+  pending: 'warning',
+  dropped: 'danger',
+  present: 'success',
+  absent: 'danger',
+  late: 'warning',
+  excused: 'primary'
+}
+
+const DIFFICULTY_VARIANTS = {
+  beginner: 'success',
+  intermediate: 'warning',
+  advanced: 'danger'
+}
 
 export default function StudentCourseShow({
   course = {},
@@ -29,29 +49,6 @@ export default function StudentCourseShow({
     return `${hour12}:${minutes} ${ampm}`
   }
 
-  const getStatusColor = (status) => {
-    const colors = {
-      active: 'bg-green-100 text-green-800',
-      completed: 'bg-blue-100 text-blue-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      dropped: 'bg-red-100 text-red-800',
-      present: 'bg-green-100 text-green-800',
-      absent: 'bg-red-100 text-red-800',
-      late: 'bg-yellow-100 text-yellow-800',
-      excused: 'bg-blue-100 text-blue-800'
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
-  }
-
-  const getDifficultyColor = (level) => {
-    const colors = {
-      beginner: 'bg-green-100 text-green-800',
-      intermediate: 'bg-yellow-100 text-yellow-800',
-      advanced: 'bg-red-100 text-red-800'
-    }
-    return colors[level] || 'bg-gray-100 text-gray-800'
-  }
-
   const getProgressColor = (percentage) => {
     if (percentage >= 90) return 'bg-green-500'
     if (percentage >= 75) return 'bg-blue-500'
@@ -71,34 +68,31 @@ export default function StudentCourseShow({
       <Head title={course.name || 'Course Details'} />
 
       <div className="space-y-6">
-        {/* Back Link */}
-        <Link
-          href="/student/courses"
-          className="inline-flex items-center text-blue-600 hover:text-blue-800"
-        >
-          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to My Courses
+        <Link href="/student/courses">
+          <Button variant="secondary">
+            <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to My Courses
+          </Button>
         </Link>
 
-        {/* Course Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-8 text-white">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <h1 className="text-4xl font-bold mb-2">{course.name}</h1>
               <p className="text-blue-100 text-lg">{course.description}</p>
             </div>
-            <span className={`px-4 py-2 rounded-full text-sm font-semibold uppercase ${getStatusColor(enrollment.status)} bg-white ml-4`}>
+            <Badge variant={STATUS_VARIANTS[enrollment.status] || 'default'} className="ml-4 text-sm px-4 py-2">
               {enrollment.status}
-            </span>
+            </Badge>
           </div>
 
           <div className="flex flex-wrap gap-4 mt-6">
             {course.difficulty_level && (
-              <div className={`px-3 py-1 rounded-lg text-sm font-semibold ${getDifficultyColor(course.difficulty_level)}`}>
+              <Badge variant={DIFFICULTY_VARIANTS[course.difficulty_level] || 'default'}>
                 {course.difficulty_level}
-              </div>
+              </Badge>
             )}
             {course.duration_months && (
               <div className="flex items-center text-blue-100">
@@ -119,9 +113,8 @@ export default function StudentCourseShow({
           </div>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+          <Card className="border-l-4 border-green-500">
             <p className="text-sm font-medium text-gray-600 mb-1">Attendance Rate</p>
             <p className={`text-3xl font-bold ${getAttendanceColor(progress_stats.attendance_percentage || 0)}`}>
               {(progress_stats.attendance_percentage || 0).toFixed(1)}%
@@ -129,9 +122,9 @@ export default function StudentCourseShow({
             <p className="text-xs text-gray-500 mt-1">
               {progress_stats.present_count || 0} / {progress_stats.total_sessions || 0} classes
             </p>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+          <Card className="border-l-4 border-blue-500">
             <p className="text-sm font-medium text-gray-600 mb-1">Course Progress</p>
             <p className="text-3xl font-bold text-gray-900">
               {(progress_stats.progress_percentage || 0).toFixed(0)}%
@@ -139,27 +132,26 @@ export default function StudentCourseShow({
             <p className="text-xs text-gray-500 mt-1">
               {progress_stats.completed_sessions || 0} sessions completed
             </p>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+          <Card className="border-l-4 border-purple-500">
             <p className="text-sm font-medium text-gray-600 mb-1">Learning Resources</p>
             <p className="text-3xl font-bold text-gray-900">
               {learning_resources.length}
             </p>
             <p className="text-xs text-gray-500 mt-1">Available materials</p>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+          <Card className="border-l-4 border-orange-500">
             <p className="text-sm font-medium text-gray-600 mb-1">Batches Enrolled</p>
             <p className="text-3xl font-bold text-gray-900">
               {batches.length}
             </p>
             <p className="text-xs text-gray-500 mt-1">Active batches</p>
-          </div>
+          </Card>
         </div>
 
-        {/* Progress Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <Card>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Overall Progress</h2>
 
           <div className="relative pt-1">
@@ -199,11 +191,10 @@ export default function StudentCourseShow({
               </div>
             </div>
           )}
-        </div>
+        </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Batches Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <Card>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Enrolled Batches</h2>
 
             {batches.length > 0 ? (
@@ -212,9 +203,9 @@ export default function StudentCourseShow({
                   <div key={index} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold text-lg text-gray-900">{batch.name}</h3>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold uppercase ${getStatusColor(batch.status)}`}>
+                      <Badge variant={STATUS_VARIANTS[batch.status] || 'default'}>
                         {batch.status}
-                      </span>
+                      </Badge>
                     </div>
 
                     {batch.schedule && (
@@ -251,10 +242,9 @@ export default function StudentCourseShow({
                 <p>No batches enrolled</p>
               </div>
             )}
-          </div>
+          </Card>
 
-          {/* Upcoming Sessions */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <Card>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Sessions</h2>
 
             {upcoming_sessions.length > 0 ? (
@@ -290,18 +280,14 @@ export default function StudentCourseShow({
                 <p className="mt-2">No upcoming sessions</p>
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
-        {/* Learning Resources */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <Card>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-900">Learning Resources</h2>
-            <Link
-              href="/student/learning_resources"
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              View All Resources
+            <Link href="/student/learning_resources">
+              <Button variant="secondary">View All Resources</Button>
             </Link>
           </div>
 
@@ -352,17 +338,13 @@ export default function StudentCourseShow({
               <p className="mt-2">No learning resources available</p>
             </div>
           )}
-        </div>
+        </Card>
 
-        {/* Recent Attendance */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <Card>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-900">Recent Attendance</h2>
-            <Link
-              href="/student/attendances"
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              View All Attendance
+            <Link href="/student/attendances">
+              <Button variant="secondary">View All Attendance</Button>
             </Link>
           </div>
 
@@ -374,9 +356,9 @@ export default function StudentCourseShow({
                     <p className="font-medium text-gray-900">{attendance.batch_name}</p>
                     <p className="text-xs text-gray-500">{formatDate(attendance.date)}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${getStatusColor(attendance.status)}`}>
+                  <Badge variant={STATUS_VARIANTS[attendance.status] || 'default'}>
                     {attendance.status}
-                  </span>
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -385,7 +367,7 @@ export default function StudentCourseShow({
               <p>No attendance records yet</p>
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </Layout>
   )

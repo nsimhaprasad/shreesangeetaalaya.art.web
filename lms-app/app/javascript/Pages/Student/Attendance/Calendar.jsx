@@ -1,6 +1,18 @@
 import { Head, Link, router } from '@inertiajs/react'
 import Layout from '@components/Layout'
+import Card from '@components/Card'
+import Badge from '@components/Badge'
+import Button from '@components/Button'
+import SelectInput from '@components/SelectInput'
 import { useState } from 'react'
+
+const STATUS_VARIANTS = {
+  present: 'success',
+  absent: 'danger',
+  late: 'warning',
+  excused: 'primary',
+  not_marked: 'default'
+}
 
 const STATUS_COLORS = {
   present: 'bg-green-500',
@@ -109,33 +121,25 @@ export default function StudentAttendanceCalendar({
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900">My Attendance Calendar</h1>
-          <Link
-            href="/student/attendances"
-            className="text-blue-600 hover:text-blue-800"
-          >
-            &larr; Back to Attendance
+          <Link href="/student/attendances">
+            <Button variant="secondary">&larr; Back to Attendance</Button>
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <Card>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Batch
-              </label>
-              <select
-                value={selectedBatch}
-                onChange={handleBatchChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">-- Select a batch --</option>
-                {batches.map((batch) => (
-                  <option key={batch.id} value={batch.id}>
-                    {batch.name} ({batch.course_name})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SelectInput
+              label="Select Batch"
+              value={selectedBatch}
+              onChange={handleBatchChange}
+              options={[
+                { value: '', label: '-- Select a batch --' },
+                ...batches.map((batch) => ({
+                  value: batch.id,
+                  label: `${batch.name} (${batch.course_name})`
+                }))
+              ]}
+            />
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -162,47 +166,53 @@ export default function StudentAttendanceCalendar({
             </div>
 
             <div className="flex items-end gap-2">
-              <button
-                onClick={handleDateRangeChange}
-                className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-              >
+              <Button onClick={handleDateRangeChange} className="flex-1">
                 Apply Filter
-              </button>
-              <button
-                onClick={goToCurrentMonth}
-                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
-              >
+              </Button>
+              <Button variant="secondary" onClick={goToCurrentMonth}>
                 Today
-              </button>
+              </Button>
             </div>
           </div>
 
           {stats && (
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
-              <div className="bg-green-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-green-600">{stats.present}</div>
-                <div className="text-xs text-gray-600">Present</div>
-              </div>
-              <div className="bg-red-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-red-600">{stats.absent}</div>
-                <div className="text-xs text-gray-600">Absent</div>
-              </div>
-              <div className="bg-yellow-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-yellow-600">{stats.late}</div>
-                <div className="text-xs text-gray-600">Late</div>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-blue-600">{stats.excused}</div>
-                <div className="text-xs text-gray-600">Excused</div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-gray-600">{stats.notMarked}</div>
-                <div className="text-xs text-gray-600">Not Marked</div>
-              </div>
-              <div className="bg-purple-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-purple-600">{stats.attendancePercentage}%</div>
-                <div className="text-xs text-gray-600">Rate</div>
-              </div>
+              <Card className="bg-green-50 text-center" padding={false}>
+                <div className="p-3">
+                  <div className="text-2xl font-bold text-green-600">{stats.present}</div>
+                  <div className="text-xs text-gray-600">Present</div>
+                </div>
+              </Card>
+              <Card className="bg-red-50 text-center" padding={false}>
+                <div className="p-3">
+                  <div className="text-2xl font-bold text-red-600">{stats.absent}</div>
+                  <div className="text-xs text-gray-600">Absent</div>
+                </div>
+              </Card>
+              <Card className="bg-yellow-50 text-center" padding={false}>
+                <div className="p-3">
+                  <div className="text-2xl font-bold text-yellow-600">{stats.late}</div>
+                  <div className="text-xs text-gray-600">Late</div>
+                </div>
+              </Card>
+              <Card className="bg-blue-50 text-center" padding={false}>
+                <div className="p-3">
+                  <div className="text-2xl font-bold text-blue-600">{stats.excused}</div>
+                  <div className="text-xs text-gray-600">Excused</div>
+                </div>
+              </Card>
+              <Card className="bg-gray-50 text-center" padding={false}>
+                <div className="p-3">
+                  <div className="text-2xl font-bold text-gray-600">{stats.notMarked}</div>
+                  <div className="text-xs text-gray-600">Not Marked</div>
+                </div>
+              </Card>
+              <Card className="bg-purple-50 text-center" padding={false}>
+                <div className="p-3">
+                  <div className="text-2xl font-bold text-purple-600">{stats.attendancePercentage}%</div>
+                  <div className="text-xs text-gray-600">Rate</div>
+                </div>
+              </Card>
             </div>
           )}
 
@@ -237,15 +247,9 @@ export default function StudentAttendanceCalendar({
                       </div>
                     )}
 
-                    <div className={`text-sm font-medium px-2 py-1 rounded inline-block ${
-                      day.status === 'not_marked' ? 'bg-gray-200 text-gray-700' :
-                      day.status === 'present' ? 'bg-green-100 text-green-800' :
-                      day.status === 'absent' ? 'bg-red-100 text-red-800' :
-                      day.status === 'late' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
+                    <Badge variant={STATUS_VARIANTS[day.status] || 'default'}>
                       {STATUS_LABELS[day.status] || 'Unknown'}
-                    </div>
+                    </Badge>
 
                     {day.notes && (
                       <div className="mt-2 text-xs text-gray-600 border-t pt-2">
@@ -276,7 +280,7 @@ export default function StudentAttendanceCalendar({
               <p className="text-lg">Please select a batch to view your attendance calendar</p>
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </Layout>
   )

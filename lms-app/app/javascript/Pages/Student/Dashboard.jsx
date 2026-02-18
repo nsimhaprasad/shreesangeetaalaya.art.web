@@ -1,18 +1,21 @@
 import { Head, Link } from '@inertiajs/react'
 import Layout from '@components/Layout'
+import Card from '@components/Card'
+import Badge from '@components/Badge'
+import Button from '@components/Button'
 
 const STATUS_COLORS = {
-  present: 'bg-green-100 text-green-800',
-  absent: 'bg-red-100 text-red-800',
-  late: 'bg-yellow-100 text-yellow-800',
-  excused: 'bg-blue-100 text-blue-800'
+  present: 'success',
+  absent: 'danger',
+  late: 'warning',
+  excused: 'primary'
 }
 
 const PAYMENT_STATUS_COLORS = {
-  paid: 'bg-green-100 text-green-800',
-  pending: 'bg-yellow-100 text-yellow-800',
-  overdue: 'bg-red-100 text-red-800',
-  partial: 'bg-orange-100 text-orange-800'
+  paid: 'success',
+  pending: 'warning',
+  overdue: 'danger',
+  partial: 'warning'
 }
 
 export default function StudentDashboard({
@@ -66,12 +69,20 @@ export default function StudentDashboard({
     return diffDays
   }
 
+  const getActivityVariant = (type) => {
+    switch (type) {
+      case 'attendance': return 'success'
+      case 'payment': return 'primary'
+      case 'resource': return 'warning'
+      default: return 'default'
+    }
+  }
+
   return (
     <Layout>
       <Head title="Student Dashboard" />
 
       <div className="space-y-6">
-        {/* Welcome Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white">
           <h1 className="text-3xl font-bold mb-2">
             Welcome back, {student.name || 'Student'}!
@@ -81,9 +92,8 @@ export default function StudentDashboard({
           </p>
         </div>
 
-        {/* Quick Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+          <Card className="border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Enrolled Courses</p>
@@ -95,9 +105,9 @@ export default function StudentDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+          <Card className="border-l-4 border-green-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Attendance Rate</p>
@@ -111,9 +121,9 @@ export default function StudentDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+          <Card className="border-l-4 border-purple-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Classes This Week</p>
@@ -125,9 +135,9 @@ export default function StudentDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+          <Card className="border-l-4 border-orange-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Outstanding Dues</p>
@@ -141,13 +151,12 @@ export default function StudentDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
-        {/* Alert for Low Attendance */}
         {stats.attendance_percentage < 75 && (
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
-            <div className="flex">
+          <Card className="bg-yellow-50 border-l-4 border-yellow-400" padding={false}>
+            <div className="p-4 flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -159,13 +168,12 @@ export default function StudentDashboard({
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
         )}
 
-        {/* Alert for Outstanding Dues */}
         {outstanding_dues > 0 && (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
-            <div className="flex">
+          <Card className="bg-red-50 border-l-4 border-red-400" padding={false}>
+            <div className="p-4 flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -178,19 +186,15 @@ export default function StudentDashboard({
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Upcoming Classes Widget */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <Card>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">Upcoming Classes</h2>
-              <Link
-                href="/student/schedule"
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-              >
-                View Schedule
+              <Link href="/student/schedule">
+                <Button variant="secondary" className="text-sm">View Schedule</Button>
               </Link>
             </div>
 
@@ -219,15 +223,9 @@ export default function StudentDashboard({
                             </span>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                            daysUntil === 0 ? 'bg-green-100 text-green-800' :
-                            daysUntil === 1 ? 'bg-blue-100 text-blue-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}
-                          </span>
-                        </div>
+                        <Badge variant={daysUntil === 0 ? 'success' : daysUntil === 1 ? 'primary' : 'default'}>
+                          {daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}
+                        </Badge>
                       </div>
                     </div>
                   )
@@ -241,17 +239,13 @@ export default function StudentDashboard({
                 <p className="mt-2">No upcoming classes in the next 7 days</p>
               </div>
             )}
-          </div>
+          </Card>
 
-          {/* Recent Attendance Widget */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <Card>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">Recent Attendance</h2>
-              <Link
-                href="/student/attendances"
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-              >
-                View All
+              <Link href="/student/attendances">
+                <Button variant="secondary" className="text-sm">View All</Button>
               </Link>
             </div>
 
@@ -263,9 +257,9 @@ export default function StudentDashboard({
                       <p className="font-medium text-gray-900">{attendance.course_name}</p>
                       <p className="text-xs text-gray-500">{formatDate(attendance.date)}</p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${STATUS_COLORS[attendance.status] || 'bg-gray-100 text-gray-800'}`}>
+                    <Badge variant={STATUS_COLORS[attendance.status] || 'default'}>
                       {attendance.status}
-                    </span>
+                    </Badge>
                   </div>
                 ))}
               </div>
@@ -277,19 +271,15 @@ export default function StudentDashboard({
                 <p className="mt-2">No attendance records yet</p>
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Course Progress Widget */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <Card>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">Course Progress</h2>
-              <Link
-                href="/student/progress"
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-              >
-                View Details
+              <Link href="/student/progress">
+                <Button variant="secondary" className="text-sm">View Details</Button>
               </Link>
             </div>
 
@@ -326,17 +316,13 @@ export default function StudentDashboard({
                 <p className="mt-2">No course progress data available</p>
               </div>
             )}
-          </div>
+          </Card>
 
-          {/* New Learning Resources Widget */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <Card>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">New Learning Resources</h2>
-              <Link
-                href="/student/learning_resources"
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-              >
-                View All
+              <Link href="/student/learning_resources">
+                <Button variant="secondary" className="text-sm">View All</Button>
               </Link>
             </div>
 
@@ -395,11 +381,10 @@ export default function StudentDashboard({
                 <p className="mt-2">No new resources available</p>
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
-        {/* Recent Activity Timeline */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <Card>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
 
           {recent_activities.length > 0 ? (
@@ -458,9 +443,8 @@ export default function StudentDashboard({
               <p>No recent activity</p>
             </div>
           )}
-        </div>
+        </Card>
 
-        {/* Quick Links */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Link
             href="/student/courses"
