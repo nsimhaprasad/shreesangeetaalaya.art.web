@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   # Override redirect_to to support Inertia responses
   def redirect_to(options = {}, response_options = {})
     if request.inertia?
-      super(options, response_options.merge(inertia: true))
+      super(options, response_options.is_a?(Hash) ? response_options.merge(inertia: true) : { inertia: true })
     else
       super(options, response_options)
     end
