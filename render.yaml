@@ -5,6 +5,7 @@ services:
     plan: free
     region: singapore
     branch: main
+    rootDir: .
     autoDeploy: true
     dockerContext: .
     dockerfilePath: ./Dockerfile

@@ -67,7 +67,7 @@
      - Name: `shree-sangeetha-aalaya`
      - Region: Oregon (US West) or Singapore (closest to India)
      - Branch: main
-     - Root Directory: `lms-app`
+     - Root Directory: `.`
      - Runtime: Docker
      - Instance Type: Free
 
