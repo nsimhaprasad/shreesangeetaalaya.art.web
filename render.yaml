@@ -39,9 +39,9 @@ services:
       - key: BREVO_SMTP_KEY
         value: xsmtpsib-141d4466271ae7ff4f2a2efb585672c4fe949271259dcdf326e69a3876681953-XQkHOIlBWVxpURwj
       - key: APP_URL
-        value: https://shreesangeetaalaya-web.onrender.com
+        value: https://shreesangeetaalaya.art
       - key: APP_HOST
-        value: shreesangeetaalaya-web.onrender.com
+        value: shreesangeetaalaya.art
       - key: GOOGLE_CLIENT_ID
         value: 588638086816-mnjs62mnn4jni11ekd57osira5hkt2dj.apps.googleusercontent.com
       - key: GOOGLE_CLIENT_SECRET
