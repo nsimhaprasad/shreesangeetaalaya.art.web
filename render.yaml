@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: shreesangeetaalaya-web
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    dockerContext: ./lms-app
+    dockerfilePath: ./lms-app/Dockerfile
+    healthCheckPath: /up
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_LEVEL
+        value: info
+      - key: RAILS_SERVE_STATIC_FILES
+        value: true
+      - key: DATABASE_URL
+        value: "postgresql://neondb_owner:npg_Tf82xeuJaKpn@ep-wild-flower-a1dzsur4-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: RAILS_MAX_THREADS
+        value: 5
+      - key: WEB_CONCURRENCY
+        value: 2
+      - key: STORAGE_PROVIDER
+        value: local
+      - key: EMAIL_DELIVERY_ENABLED
+        value: false
+      - key: EMAIL_FROM_ADDRESS
+        value: noreply@shreesangeetaalaya.art
+      - key: EMAIL_FROM_NAME
+        value: Shree Sangeetha Aalaya
+      - key: APP_URL
+        value: https://shreesangeetaalaya-web.onrender.com
+      - key: APP_HOST
+        value: shreesangeetaalaya-web.onrender.com
+      - key: BREVO_API_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
