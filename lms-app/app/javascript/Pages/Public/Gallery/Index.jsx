@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Layout from '../../../Components/Layout'
 import Card from '../../../Components/Card'
 
@@ -39,7 +39,7 @@ export default function Index({ gallery_setting, local_photos = [] }) {
   }
 
   // Add keyboard event listener
-  useState(() => {
+  useEffect(() => {
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [lightboxOpen, currentIndex])

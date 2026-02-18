@@ -2,7 +2,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
 
   # Enums
   enum role: { admin: 'admin', teacher: 'teacher', student: 'student' }
@@ -40,5 +41,24 @@ class User < ApplicationRecord
 
   def active?
     status == 'active'
+  end
+
+  # OAuth class method
+  def self.from_omniauth(auth)
+    user = find_or_initialize_by(provider: auth.provider, uid: auth.uid)
+    
+    if user.new_record?
+      user.email = auth.info.email
+      user.first_name = auth.info.first_name || auth.info.name&.split&.first || 'Google'
+      user.last_name = auth.info.last_name || auth.info.name&.split&.last || 'User'
+      user.password = Devise.friendly_token[0, 20]
+      user.role = 'student' # Default role for OAuth users
+      user.status = 'active'
+      
+      # Create associated student record
+      user.build_student if user.student.blank?
+    end
+    
+    user
   end
 end
