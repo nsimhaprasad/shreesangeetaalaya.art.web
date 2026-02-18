@@ -1,11 +1,17 @@
 {
-  "app/javascript/application.jsx": {
-    "file": "assets/application-BHst9Rln.js",
-    "name": "application",
-    "src": "app/javascript/application.jsx",
+  "entrypoints/application.js": {
+    "file": "assets/application-DBfCPIOZ.js",
+    "name": "entrypoints/application.js",
+    "src": "entrypoints/application.js",
+    "isEntry": true
+  },
+  "entrypoints/application.jsx": {
+    "file": "assets/application-BKdhB7Bz.js",
+    "name": "entrypoints/application.jsx",
+    "src": "entrypoints/application.jsx",
     "isEntry": true,
     "css": [
-      "assets/application-F1uEF3Uj.css"
+      "assets/application-BNUmkcOK.css"
     ]
   }
 }
