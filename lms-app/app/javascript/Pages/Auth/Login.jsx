@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react'
 import { useState } from 'react'
-import { Button, Input, Checkbox } from '../Components/UI'
+import { Button, Input, Checkbox } from '@components/UI'
 
 const musicNoteIcon = (
   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
