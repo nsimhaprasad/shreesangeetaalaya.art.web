@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_17_151920) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -40,8 +43,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "attendances", force: :cascade do |t|
-    t.integer "class_session_id", null: false
-    t.integer "student_id", null: false
+    t.bigint "class_session_id", null: false
+    t.bigint "student_id", null: false
     t.string "status"
     t.datetime "marked_at"
     t.bigint "marked_by"
@@ -55,8 +58,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "batch_enrollments", force: :cascade do |t|
-    t.integer "batch_id", null: false
-    t.integer "student_id", null: false
+    t.bigint "batch_id", null: false
+    t.bigint "student_id", null: false
     t.date "enrollment_date"
     t.string "status"
     t.datetime "created_at", null: false
@@ -68,8 +71,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
 
   create_table "batches", force: :cascade do |t|
     t.string "name"
-    t.integer "course_id", null: false
-    t.integer "teacher_id", null: false
+    t.bigint "course_id", null: false
+    t.bigint "teacher_id", null: false
     t.string "class_type"
     t.string "schedule_day"
     t.time "schedule_time"
@@ -84,8 +87,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "class_credits", force: :cascade do |t|
-    t.integer "student_id", null: false
-    t.integer "batch_id", null: false
+    t.bigint "student_id", null: false
+    t.bigint "batch_id", null: false
     t.integer "credits", default: 0, null: false
     t.integer "used_credits", default: 0, null: false
     t.datetime "purchase_date", null: false
@@ -100,7 +103,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "class_sessions", force: :cascade do |t|
-    t.integer "batch_id", null: false
+    t.bigint "batch_id", null: false
     t.date "class_date"
     t.time "class_time"
     t.integer "duration_minutes", default: 60
@@ -109,9 +112,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "zoom_meeting_id"
+    t.string "zoom_join_url"
+    t.string "zoom_start_url"
+    t.string "zoom_password"
+    t.boolean "is_online", default: false
     t.index ["batch_id", "class_date"], name: "index_class_sessions_on_batch_id_and_class_date"
     t.index ["batch_id"], name: "index_class_sessions_on_batch_id"
     t.index ["status"], name: "index_class_sessions_on_status"
+    t.index ["zoom_meeting_id"], name: "index_class_sessions_on_zoom_meeting_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -152,7 +161,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "fee_structures", force: :cascade do |t|
-    t.integer "batch_id", null: false
+    t.bigint "batch_id", null: false
     t.string "class_type"
     t.string "fee_type"
     t.decimal "amount", precision: 10, scale: 2
@@ -190,12 +199,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "payments", force: :cascade do |t|
-    t.integer "student_id", null: false
-    t.integer "batch_enrollment_id", null: false
+    t.bigint "student_id", null: false
+    t.bigint "batch_enrollment_id", null: false
     t.decimal "amount", precision: 10, scale: 2
     t.date "payment_date"
     t.string "payment_method"
-    t.integer "fee_offer_id"
+    t.bigint "fee_offer_id"
     t.string "transaction_reference"
     t.integer "months_covered"
     t.integer "classes_covered"
@@ -210,11 +219,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "referrals", force: :cascade do |t|
-    t.integer "referrer_id", null: false
-    t.integer "referred_student_id", null: false
+    t.bigint "referrer_id", null: false
+    t.bigint "referred_student_id", null: false
     t.string "referral_code", null: false
     t.string "status", default: "pending", null: false
-    t.integer "qualifying_purchase_id"
+    t.bigint "qualifying_purchase_id"
     t.string "reward_type"
     t.decimal "reward_amount", precision: 10, scale: 2
     t.datetime "rewarded_at"
@@ -229,9 +238,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "resource_assignments", force: :cascade do |t|
-    t.integer "learning_resource_id", null: false
+    t.bigint "learning_resource_id", null: false
     t.string "assignable_type", null: false
-    t.integer "assignable_id", null: false
+    t.bigint "assignable_id", null: false
     t.bigint "assigned_by"
     t.datetime "assigned_at"
     t.text "notes"
@@ -256,8 +265,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "student_purchases", force: :cascade do |t|
-    t.integer "student_id", null: false
-    t.integer "batch_id"
+    t.bigint "student_id", null: false
+    t.bigint "batch_id"
     t.string "purchase_type", null: false
     t.integer "quantity", default: 1, null: false
     t.decimal "amount", precision: 10, scale: 2, null: false
@@ -275,7 +284,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "students", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "guardian_name"
     t.string "guardian_phone"
     t.string "guardian_email"
@@ -291,7 +300,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   end
 
   create_table "teachers", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "specialization"
     t.integer "years_of_experience"
     t.string "qualification"
@@ -300,6 +309,27 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_teachers_on_user_id"
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "payment_id", null: false
+    t.bigint "student_id", null: false
+    t.string "phonepe_transaction_id"
+    t.string "phonepe_merchant_transaction_id"
+    t.decimal "amount", precision: 10, scale: 2
+    t.string "status"
+    t.string "payment_mode"
+    t.string "phonepe_checksum"
+    t.jsonb "phonepe_response"
+    t.datetime "completed_at"
+    t.text "failure_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payment_id"], name: "index_transactions_on_payment_id"
+    t.index ["phonepe_merchant_transaction_id"], name: "index_transactions_on_phonepe_merchant_transaction_id", unique: true
+    t.index ["phonepe_transaction_id"], name: "index_transactions_on_phonepe_transaction_id"
+    t.index ["status"], name: "index_transactions_on_status"
+    t.index ["student_id"], name: "index_transactions_on_student_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -318,7 +348,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "provider"
+    t.string "uid"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -349,4 +382,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_17_151918) do
   add_foreign_key "student_purchases", "students"
   add_foreign_key "students", "users"
   add_foreign_key "teachers", "users"
+  add_foreign_key "transactions", "payments"
+  add_foreign_key "transactions", "students"
 end
