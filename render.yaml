@@ -6,8 +6,8 @@ services:
     region: singapore
     branch: main
     autoDeploy: true
-    dockerContext: ./lms-app
-    dockerfilePath: ./lms-app/Dockerfile
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /up
     envVars:
       - key: RAILS_ENV
