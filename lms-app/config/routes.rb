@@ -94,6 +94,8 @@ Rails.application.routes.draw do
         post :mark_attendance
         put :update_attendance
       end
+      # Zoom meeting routes
+      resource :zoom_meeting, only: [:create, :destroy]
     end
     resources :payments do
       member do
@@ -122,7 +124,15 @@ Rails.application.routes.draw do
       end
     end
     resources :learning_resources, only: [:index, :show]
-    resources :payments, only: [:index, :show]
+    resources :payments, only: [:index, :show] do
+      member do
+        post :initiate_payment
+        get :phonepe_callback
+      end
+      collection do
+        post :phonepe_webhook
+      end
+    end
     resources :gallery, only: [:index]
 
     # Purchase and credits routes

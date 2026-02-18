@@ -1,17 +1,21 @@
 class Payment < ApplicationRecord
   # Enums
   enum payment_method: { cash: 'cash', upi: 'upi', bank_transfer: 'bank_transfer', credit_card: 'credit_card', debit_card: 'debit_card', cheque: 'cheque' }
+  enum status: { pending: 'pending', completed: 'completed', failed: 'failed', refunded: 'refunded' }, _prefix: true
 
   # Associations
   belongs_to :student
   belongs_to :batch_enrollment
   belongs_to :fee_offer, optional: true
   belongs_to :recorded_by_user, class_name: 'User', foreign_key: 'recorded_by', optional: true
+  has_many :transactions, dependent: :destroy
 
   # Validations
   validates :amount, presence: true, numericality: { greater_than: 0 }
-  validates :payment_date, presence: true
   validates :payment_method, presence: true
+
+  # Callbacks
+  before_validation :set_default_status, on: :create
 
   # Scopes
   scope :recent, -> { order(payment_date: :desc) }
@@ -33,7 +37,8 @@ class Payment < ApplicationRecord
 
   private
 
-  def set_payment_date
-    self.payment_date ||= Date.today
+  def set_default_status
+    self.status ||= 'pending'
+    self.payment_date ||= Date.today if status == 'completed'
   end
 end

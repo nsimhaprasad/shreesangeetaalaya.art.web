@@ -47,4 +47,69 @@ class ClassSession < ApplicationRecord
     total_count = attendances.count
     (present_count.to_f / total_count * 100).round(2)
   end
+
+  # Zoom meeting methods
+  def has_zoom_meeting?
+    zoom_meeting_id.present? && is_online?
+  end
+
+  def zoom_meeting_details
+    return nil unless has_zoom_meeting?
+
+    {
+      meeting_id: zoom_meeting_id,
+      join_url: zoom_join_url,
+      password: zoom_password,
+      is_online: is_online
+    }
+  end
+
+  def scheduled_at
+    # Combine class_date and class_time into a datetime
+    Time.zone.parse("#{class_date} #{class_time}")
+  end
+
+  def duration
+    duration_minutes || 60
+  end
+
+  def create_zoom_meeting!
+    return if has_zoom_meeting?
+
+    zoom_service = ZoomService.new
+    meeting = zoom_service.create_meeting(
+      topic: "#{batch.course.name} - #{topic || 'Class'}",
+      start_time: scheduled_at,
+      duration: duration,
+      password: SecureRandom.random_number(1000000).to_s.rjust(6, '0')
+    )
+
+    if meeting
+      update!(
+        zoom_meeting_id: meeting['id'],
+        zoom_join_url: meeting['join_url'],
+        zoom_start_url: meeting['start_url'],
+        zoom_password: meeting['password'],
+        is_online: true
+      )
+      meeting
+    else
+      nil
+    end
+  end
+
+  def delete_zoom_meeting!
+    return unless has_zoom_meeting?
+
+    zoom_service = ZoomService.new
+    zoom_service.delete_meeting(zoom_meeting_id)
+    
+    update!(
+      zoom_meeting_id: nil,
+      zoom_join_url: nil,
+      zoom_start_url: nil,
+      zoom_password: nil,
+      is_online: false
+    )
+  end
 end

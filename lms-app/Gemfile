@@ -33,6 +33,7 @@ gem "cloudinary"
 gem "dotenv-rails", groups: [:development, :test]
 
 gem "httparty"
+gem "jwt"
 
 gem "sentry-ruby"
 gem "sentry-rails"
